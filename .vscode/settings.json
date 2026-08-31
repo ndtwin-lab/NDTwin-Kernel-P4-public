@@ -1,0 +1,18 @@
+{
+    "claudeCode.enableNewConversationShortcut": true,
+    "claudeCode.useCtrlEnterToSend": true,
+    "claudeCode.preferredLocation": "sidebar",
+    "files.watcherExclude": {
+        "**/build/**": true,
+        "**/p4_proxy/venv/**": true,
+        "**/__pycache__/**": true
+    },
+    "files.exclude": {
+        "**/__pycache__": true
+    },
+    "search.exclude": {
+        "**/build": true,
+        "**/p4_proxy/venv": true,
+        "**/__pycache__": true
+    }
+}

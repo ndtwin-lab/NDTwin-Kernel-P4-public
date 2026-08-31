@@ -1,0 +1,17 @@
+Language: Cpp
+BasedOnStyle: Microsoft
+
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AlwaysBreakAfterReturnType: TopLevelDefinitions
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+ColumnLimit: 100
+DeriveLineEnding: false
+InsertBraces: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+PackConstructorInitializers: Never
+PointerAlignment: Left
+QualifierAlignment: Left
+SeparateDefinitionBlocks: Always

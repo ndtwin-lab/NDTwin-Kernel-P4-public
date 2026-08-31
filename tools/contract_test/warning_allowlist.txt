@@ -1,0 +1,140 @@
+# NDTwin kernel log allowlist
+#
+# Purpose: make NEW warnings fail the build.
+#
+# Without this file, "check the log for warnings" degrades as soon as there are more
+# than a handful -- a genuinely new warning gets lost among the ones you have already
+# decided to live with. Here, anything not listed is a failure, so a regression cannot
+# hide in the noise.
+#
+# Format (three fields, separated by a pipe WITH SPACES around it):
+#
+#   LEVEL | python regex matched against the message | why it is acceptable
+#
+# The separator is " | " (whitespace-pipe-whitespace), not a bare pipe, so that regex
+# alternation still works: write it without surrounding spaces, e.g. (warn|error).
+#
+# LEVEL is one of:
+#   WARNING  allowed at warning level; anything unlisted at warning level fails
+#   ERROR    allowed at error level. Use sparingly and always with an expiry note --
+#            an accepted error should be a bug with a ticket, not a permanent fixture
+#   FORBID   fails if it appears at ANY level, including info/debug. For messages that
+#            are quiet but mean something is badly wrong
+#
+# The regex is matched with re.search against the message text only (timestamp, level,
+# file:line and function are stripped first), so no need to anchor it.
+#
+# Maintenance:
+#   * check_logs.py reports entries that never matched, so stale lines get pruned
+#   * to adopt this on an existing noisy log, run:
+#       ./check_logs.py --suggest-allowlist <logfile>
+#     then review each suggestion before pasting it in. Do not paste blindly: the
+#     point is to decide which warnings are acceptable, not to silence all of them
+#
+# [Co-developed with claude code -- Adam]
+
+
+# ============================================================================
+# Startup and convergence
+# ----------------------------------------------------------------------------
+# The kernel loads a static topology and then waits to learn live state. Until the
+# controller (Ryu or the P4 proxy) has reported in, lookups legitimately miss.
+# ============================================================================
+
+WARNING | ^NFS server reloaded\.$ | ApplicationManager logs a successful NFS reload at warning level; informational, not a problem
+WARNING | ^ControllerAndOtherEventHandler stopped\.$ | normal shutdown message
+WARNING | acceptor_\.close\(\) error | benign during shutdown when the acceptor is already closed
+# [Co-developed with claude code -- Adam]
+# REMOVED, and the reasoning that put it here was wrong. `switch not found dpid N` was
+# allowlisted on the strength of one measurement in a healthy environment -- 50 occurrences over
+# 105 ms at startup -- with the note that "a version of this that does NOT stop would be a real
+# fault, and the message is how you would see it". Allowlisting it is precisely what stopped you
+# seeing it. With the control plane down the same warning is unbounded: 75,853 occurrences in two
+# minutes, an 8.5 MB log.
+#
+# Classifier::lookup no longer logs at all (it is called once per hop per flow at ~1 kHz, so it
+# cannot log safely), and its only caller reports the two distinct causes through
+# utils::KeyedFailureLog -- one line when a fault starts, one when it clears, with the duration.
+# Those lines are deliberately NOT allowlisted: "the control plane never reported this switch" is
+# a real fault and should fail the log check.
+
+
+# ============================================================================
+# Topology lookup misses
+# ----------------------------------------------------------------------------
+# Expected while the graph is still converging, and permanently for hosts that are
+# not listed in the static topology file (the OVS testbed has 128 hosts declared but
+# traffic may involve others).
+#
+# NOTE: if these persist AFTER convergence they are real. Tighten the patterns or
+# move the check into the L2 contract test, which asserts on final state instead.
+# ============================================================================
+
+WARNING | ^Host \(.*\) not found in static network topology file$ | host absent from the static topology; harmless for telemetry-only hosts
+WARNING | ^Edge \(host .*\) not found in static network topology file$ | same as above, edge side
+WARNING | ^Link \(dpid .* port .*\) not found in static network topology file$ | link not declared statically; transient during discovery
+WARNING | ^edge not found by dpid/port | sFlow sample arrived for a link not yet in the graph; transient during convergence
+WARNING | ^No edge found for host IP | transient during convergence
+WARNING | ^cannot find graph vertex for switch IP | transient during convergence
+
+
+# ============================================================================
+# Known gaps with an owner
+# ----------------------------------------------------------------------------
+# Each line here is a promise to remove it. Keep the phase reference so it is obvious
+# when the entry has outlived its reason.
+# ============================================================================
+
+WARNING | P4 BMv2 Power ON from Kernel is currently a stub | known gap: real bmv2 process control lands in Phase 7 of doc/2026-07-27_p4_bmv2_support_plan.md
+
+
+# ============================================================================
+# FORBID: quiet messages that mean real trouble
+# ----------------------------------------------------------------------------
+# These fail even at info/debug level, because their severity is not reflected in the
+# level they are logged at.
+# ============================================================================
+
+FORBID | Unsupported SFlow Version | the sFlow emitter is producing malformed datagrams; the collector is discarding every sample
+FORBID | Cannot open topology file | the kernel is running without its topology; the whole graph will be empty
+FORBID | No matching node in JSON | a device rename targeted the wrong topology file (see issue 12 in doc/2026-07-27_p4_bmv2_support_plan.md)
+FORBID | Failed to bind UDP socket | the sFlow collector port is taken; no telemetry will arrive at all
+FORBID | Failed to create UDP socket | as above
+FORBID | Exceed 100 hop \(potential loop\) | a forwarding loop in the computed path
+FORBID | logger with name .* already exists | Logger::init called twice; a test suite is probably being skipped silently
+FORBID | Cannot open OpenflowCapacity\.json | missing doc/2026-01-02_OpenflowCapacity.json; get_openflow_capacity returns an empty 200
+
+# --- client errors the L2 contract test provokes deliberately ---------------------
+# [Co-developed with claude code -- Adam]
+# Added 2026-08-07, when the first integration run failed the log check on 14 distinct
+# messages and every single one was run_contract_test.py's own error-path probe. The
+# test exists to send malformed input; the kernel is supposed to refuse it; refusing it
+# is not a fault.
+#
+# These are WARNING rather than ERROR as of the same day: all three of the sites that
+# used to log at ERROR answer 400, and logging a client error at ERROR is the same
+# conflation as answering 500 for one. A kernel-side ERROR should mean the kernel has a
+# problem, which is what makes the "error is never allowed" rule worth having.
+#
+# Note what this trades away: a real flood of client errors from a broken app is now
+# quiet here. That is the right call for the log gate specifically -- it is the wrong
+# tool for that job, and per-endpoint 4xx rates belong in the API metrics, not in a
+# grep for the word error.
+WARNING | ^JSON exception in request handler: | 400 path; L2 sends malformed JSON on purpose
+WARNING | ^Found stale application folder from a previous run: | Every start, by design: cleanupStaleEntries runs from the constructor and reports what it is about to remove. Informative, not a problem
+WARNING | ^Leaving .* in place: .* belongs to a squashed NFS client | Expected on any all_squash deployment and not fixable without root -- the client owns its workspace contents, and remove_all needs write on each parent. Was logged at ERROR until 2026-08-18; see ApplicationManager::isSquashedClientContentFailure
+WARNING | ^Bad entry in request: | 400 path from the makeInstallJob try/catch. No longer reached by install_flow_entry__missing_fields (the shape check answers that one first, 2026-08-18); still reachable by a well-shaped entry whose field TYPES are wrong, e.g. \"priority\": \"high\"
+WARNING | ^Exception in intent_translator: | 400 path; L2 posts an empty intent body
+WARNING | ^Invalid lock type requested: | 400/423 path; L2's acquire_lock_invalid_type
+WARNING | ^refusing flow batch: none of its [0-9]+ entries names a switch | 404 path; L2's install_flow_entry__unknown_dpid. Pattern updated 2026-08-18: the message was reworded and this entry still matched the old text, so it showed up as an unmatched problem AND as an unused allowlist entry in the same run
+WARNING | ^refusing flow batch: [0-9]+ of [0-9]+ entries cannot form a rule | 400 path; L2's install_flow_entry__missing_fields. The synchronous shape check, added 2026-08-18: an entry that cannot form a rule whatever the switch answers is refused before anything is queued
+WARNING | ^get_path_switch_count: bad IP parameter | 400 path; L2's get_path_switch_count__bad_ip
+WARNING | ^inform_switch_entered: dpid .* is not an unsigned integer | 400 path; L2's inform_switch_entered__bad_dpid
+WARNING | ^get_nickname: dpid .* is not an unsigned integer | 400 path, same shape as the above
+WARNING | ^modify_device_name: mac .* is not a MAC address | 400 path, added with the MAC validation
+WARNING | ^modify_nickname: mac .* is not a MAC address | 400 path, added with the MAC validation
+WARNING | ^Received unsupported request: method= | 404 path; L2's unknown_endpoint probe
+WARNING | ^Rejecting simulation case: body is not valid JSON | 400 path; L2's received_a_simulation_case__malformed
+WARNING | ^Rejecting simulation case: missing required field | 400 path; L2's received_a_simulation_case__missing_fields
+WARNING | ^Rejecting simulation result: app_id .* is not a valid id | 400 path; L2's simulation_completed__malformed
+WARNING | ^intent_translator requested but the translator is disabled | 503 path; L2's intent_translator_text__incomplete_body. stack.sh always starts the kernel --no-ai, so the guard added 2026-08-11 answers every call this way -- the warning is the guard working, not a fault

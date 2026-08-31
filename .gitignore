@@ -1,0 +1,70 @@
+build/
+bin/
+include/utils/AppConfig.hpp
+setting/AppConfig.hpp
+.gitignore
+setting/AppConfig.hpp
+
+# Build and Debug Caches
+build/
+bin/
+cmake-build-debug/
+.idea/
+.vscode_backup/
+
+# Python and Environment
+p4_proxy/venv/
+__pycache__/
+# sanitizer build tree (see tests/test_SFlowParsing.cpp)
+build-asan/
+# test-run artefacts (tools/test_workflow)
+.test_run/
+
+# ctest 產物（2026-07-30 誤加進版本庫過一次，見 commit a142fe0）
+Testing/
+
+# Sanitizer build trees (see cmake/sanitizer-flags.cmake)
+build-asan/
+build-tsan/
+build-fuzz/
+build-clang/
+test_env/
+
+# Investigation working area. 3.3 GB as of 2026-08-19 -- scratch/lab alone holds the
+# captured pcaps and switch logs from the live rounds, and none of it is reviewable in a
+# diff. Findings worth keeping get promoted to doc/audit/<date>_<topic>/ instead.
+scratch/
+
+# [Co-developed with claude code -- Adam]
+# Measurement traces are committed gzipped -- the 08-19 round already did
+# (doc/audit/2026-08-19_p4-sflow-accuracy/*.jsonl.gz) and the 08-20 round broke that convention
+# by committing them plain. A single 300 s trace is 600-1200 JSON lines; a 12-cell matrix is
+# 33k lines and 89 MB that diff as pure noise. Commit the .gz, keep the plain file local.
+doc/audit/**/raw/*.jsonl
+doc/audit/**/raw/*_server.log
+
+# --- audit raw artifacts ------------------------------------------------------------------
+# [Co-developed with claude code -- Adam]
+# Raw logs and dumps live on the `audit-raw` orphan branch, not on a working branch: they were
+# 166k lines of every pull request diff and none of the review. Per-round raw/ directories carry
+# their own .gitignore too, but only after someone remembers to add one -- a round created on
+# 2026-08-25 did not, and 279k lines went into a commit before the amend.
+#
+# The line below used to read `raw/*` and claimed, right here, to cover "every future round
+# without anyone remembering". It did not. A round on 2026-08-27 wrote to raw_n/, raw_gil/ and
+# raw_h/, which `raw/*` does not match, and 166k lines went onto the working branch -- while the
+# same round dutifully gzipped its tarballs, so the author clearly was managing volume and was
+# simply outside the pattern's literal reach. Widened to `raw*` so a suffix cannot slip past it.
+# The claim of completeness is deleted rather than reworded: this rule covers directories whose
+# names start with raw, and nothing else.
+doc/audit/*/raw*/*
+!doc/audit/*/raw*/.gitignore
+doc/audit/2026-08-25_sampling-rounds/ladder_ext.log
+doc/audit/2026-08-25_sampling-rounds/ladder_ext.out
+# Ticket G: 245 py-spy dumps, 15 MB uncompressed. The tarball beside it is committed.
+doc/audit/2026-08-25_sampling-rounds/raw_gil/
+doc/audit/2026-08-25_sampling-rounds/gil_g.log
+doc/audit/2026-08-25_sampling-rounds/raw_h/
+doc/audit/2026-08-25_sampling-rounds/h_probe.log
+doc/audit/2026-08-25_sampling-rounds/raw_n/
+doc/audit/2026-08-25_sampling-rounds/*.log

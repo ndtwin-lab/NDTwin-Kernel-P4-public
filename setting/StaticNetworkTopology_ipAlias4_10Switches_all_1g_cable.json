@@ -1,0 +1,2085 @@
+{
+  "edges": [
+    {
+      "dst_dpid": 106225808402492,
+      "dst_interface": 1,
+      "dst_ip": [
+        "10.10.10.4"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.1",
+        "192.168.1.2",
+        "192.168.1.3",
+        "192.168.1.4"
+      ]
+    },
+    {
+      "dst_dpid": 106225808402492,
+      "dst_interface": 2,
+      "dst_ip": [
+        "10.10.10.4"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.5",
+        "192.168.1.6",
+        "192.168.1.7",
+        "192.168.1.8"
+      ]
+    },
+    {
+      "dst_dpid": 106225808402492,
+      "dst_interface": 3,
+      "dst_ip": [
+        "10.10.10.4"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.9",
+        "192.168.1.10",
+        "192.168.1.11",
+        "192.168.1.12"
+      ]
+    },
+    {
+      "dst_dpid": 106225808402492,
+      "dst_interface": 4,
+      "dst_ip": [
+        "10.10.10.4"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.13",
+        "192.168.1.14",
+        "192.168.1.15",
+        "192.168.1.16"
+      ]
+    },
+    {
+      "dst_dpid": 106225808402492,
+      "dst_interface": 5,
+      "dst_ip": [
+        "10.10.10.4"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.17",
+        "192.168.1.18",
+        "192.168.1.19",
+        "192.168.1.20"
+      ]
+    },
+    {
+      "dst_dpid": 106225808402492,
+      "dst_interface": 6,
+      "dst_ip": [
+        "10.10.10.4"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.21",
+        "192.168.1.22",
+        "192.168.1.23",
+        "192.168.1.24"
+      ]
+    },
+    {
+      "dst_dpid": 106225808402492,
+      "dst_interface": 7,
+      "dst_ip": [
+        "10.10.10.4"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.25",
+        "192.168.1.26",
+        "192.168.1.27",
+        "192.168.1.28"
+      ]
+    },
+    {
+      "dst_dpid": 106225808402492,
+      "dst_interface": 8,
+      "dst_ip": [
+        "10.10.10.4"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.29",
+        "192.168.1.30",
+        "192.168.1.31",
+        "192.168.1.32"
+      ]
+    },
+    {
+      "dst_dpid": 106225808387660,
+      "dst_interface": 1,
+      "dst_ip": [
+        "10.10.10.3"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.33",
+        "192.168.1.34",
+        "192.168.1.35",
+        "192.168.1.36"
+      ]
+    },
+    {
+      "dst_dpid": 106225808387660,
+      "dst_interface": 2,
+      "dst_ip": [
+        "10.10.10.3"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.37",
+        "192.168.1.38",
+        "192.168.1.39",
+        "192.168.1.40"
+      ]
+    },
+    {
+      "dst_dpid": 106225808387660,
+      "dst_interface": 3,
+      "dst_ip": [
+        "10.10.10.3"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.41",
+        "192.168.1.42",
+        "192.168.1.43",
+        "192.168.1.44"
+      ]
+    },
+    {
+      "dst_dpid": 106225808387660,
+      "dst_interface": 4,
+      "dst_ip": [
+        "10.10.10.3"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.45",
+        "192.168.1.46",
+        "192.168.1.47",
+        "192.168.1.48"
+      ]
+    },
+    {
+      "dst_dpid": 106225808387660,
+      "dst_interface": 5,
+      "dst_ip": [
+        "10.10.10.3"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.49",
+        "192.168.1.50",
+        "192.168.1.51",
+        "192.168.1.52"
+      ]
+    },
+    {
+      "dst_dpid": 106225808387660,
+      "dst_interface": 6,
+      "dst_ip": [
+        "10.10.10.3"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.53",
+        "192.168.1.54",
+        "192.168.1.55",
+        "192.168.1.56"
+      ]
+    },
+    {
+      "dst_dpid": 106225808387660,
+      "dst_interface": 7,
+      "dst_ip": [
+        "10.10.10.3"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.57",
+        "192.168.1.58",
+        "192.168.1.59",
+        "192.168.1.60"
+      ]
+    },
+    {
+      "dst_dpid": 106225808387660,
+      "dst_interface": 8,
+      "dst_ip": [
+        "10.10.10.3"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.61",
+        "192.168.1.62",
+        "192.168.1.63",
+        "192.168.1.64"
+      ]
+    },
+    {
+      "dst_dpid": 106225808391692,
+      "dst_interface": 1,
+      "dst_ip": [
+        "10.10.10.9"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.65",
+        "192.168.1.66",
+        "192.168.1.67",
+        "192.168.1.68"
+      ]
+    },
+    {
+      "dst_dpid": 106225808391692,
+      "dst_interface": 2,
+      "dst_ip": [
+        "10.10.10.9"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.69",
+        "192.168.1.70",
+        "192.168.1.71",
+        "192.168.1.72"
+      ]
+    },
+    {
+      "dst_dpid": 106225808391692,
+      "dst_interface": 3,
+      "dst_ip": [
+        "10.10.10.9"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.73",
+        "192.168.1.74",
+        "192.168.1.75",
+        "192.168.1.76"
+      ]
+    },
+    {
+      "dst_dpid": 106225808391692,
+      "dst_interface": 4,
+      "dst_ip": [
+        "10.10.10.9"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.77",
+        "192.168.1.78",
+        "192.168.1.79",
+        "192.168.1.80"
+      ]
+    },
+    {
+      "dst_dpid": 106225808391692,
+      "dst_interface": 5,
+      "dst_ip": [
+        "10.10.10.9"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.81",
+        "192.168.1.82",
+        "192.168.1.83",
+        "192.168.1.84"
+      ]
+    },
+    {
+      "dst_dpid": 106225808391692,
+      "dst_interface": 6,
+      "dst_ip": [
+        "10.10.10.9"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.85",
+        "192.168.1.86",
+        "192.168.1.87",
+        "192.168.1.88"
+      ]
+    },
+    {
+      "dst_dpid": 106225808391692,
+      "dst_interface": 7,
+      "dst_ip": [
+        "10.10.10.9"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.89",
+        "192.168.1.90",
+        "192.168.1.91",
+        "192.168.1.92"
+      ]
+    },
+    {
+      "dst_dpid": 106225808391692,
+      "dst_interface": 8,
+      "dst_ip": [
+        "10.10.10.9"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.93",
+        "192.168.1.94",
+        "192.168.1.95",
+        "192.168.1.96"
+      ]
+    },
+    {
+      "dst_dpid": 106225808380928,
+      "dst_interface": 1,
+      "dst_ip": [
+        "10.10.10.10"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.97",
+        "192.168.1.98",
+        "192.168.1.99",
+        "192.168.1.100"
+      ]
+    },
+    {
+      "dst_dpid": 106225808380928,
+      "dst_interface": 2,
+      "dst_ip": [
+        "10.10.10.10"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.101",
+        "192.168.1.102",
+        "192.168.1.103",
+        "192.168.1.104"
+      ]
+    },
+    {
+      "dst_dpid": 106225808380928,
+      "dst_interface": 3,
+      "dst_ip": [
+        "10.10.10.10"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.105",
+        "192.168.1.106",
+        "192.168.1.107",
+        "192.168.1.108"
+      ]
+    },
+    {
+      "dst_dpid": 106225808380928,
+      "dst_interface": 4,
+      "dst_ip": [
+        "10.10.10.10"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.109",
+        "192.168.1.110",
+        "192.168.1.111",
+        "192.168.1.112"
+      ]
+    },
+    {
+      "dst_dpid": 106225808380928,
+      "dst_interface": 5,
+      "dst_ip": [
+        "10.10.10.10"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.113",
+        "192.168.1.114",
+        "192.168.1.115",
+        "192.168.1.116"
+      ]
+    },
+    {
+      "dst_dpid": 106225808380928,
+      "dst_interface": 6,
+      "dst_ip": [
+        "10.10.10.10"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.117",
+        "192.168.1.118",
+        "192.168.1.119",
+        "192.168.1.120"
+      ]
+    },
+    {
+      "dst_dpid": 106225808380928,
+      "dst_interface": 7,
+      "dst_ip": [
+        "10.10.10.10"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.121",
+        "192.168.1.122",
+        "192.168.1.123",
+        "192.168.1.124"
+      ]
+    },
+    {
+      "dst_dpid": 106225808380928,
+      "dst_interface": 8,
+      "dst_ip": [
+        "10.10.10.10"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 0,
+      "src_interface": 0,
+      "src_ip": [
+        "192.168.1.125",
+        "192.168.1.126",
+        "192.168.1.127",
+        "192.168.1.128"
+      ]
+    },
+
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.1",
+        "192.168.1.2",
+        "192.168.1.3",
+        "192.168.1.4"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808402492,
+      "src_interface": 1,
+      "src_ip": [
+        "10.10.10.4"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.5",
+        "192.168.1.6",
+        "192.168.1.7",
+        "192.168.1.8"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808402492,
+      "src_interface": 2,
+      "src_ip": [
+        "10.10.10.4"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.9",
+        "192.168.1.10",
+        "192.168.1.11",
+        "192.168.1.12"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808402492,
+      "src_interface": 3,
+      "src_ip": [
+        "10.10.10.4"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.13",
+        "192.168.1.14",
+        "192.168.1.15",
+        "192.168.1.16"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808402492,
+      "src_interface": 4,
+      "src_ip": [
+        "10.10.10.4"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.17",
+        "192.168.1.18",
+        "192.168.1.19",
+        "192.168.1.20"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808402492,
+      "src_interface": 5,
+      "src_ip": [
+        "10.10.10.4"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.21",
+        "192.168.1.22",
+        "192.168.1.23",
+        "192.168.1.24"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808402492,
+      "src_interface": 6,
+      "src_ip": [
+        "10.10.10.4"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.25",
+        "192.168.1.26",
+        "192.168.1.27",
+        "192.168.1.28"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808402492,
+      "src_interface": 7,
+      "src_ip": [
+        "10.10.10.4"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.29",
+        "192.168.1.30",
+        "192.168.1.31",
+        "192.168.1.32"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808402492,
+      "src_interface": 8,
+      "src_ip": [
+        "10.10.10.4"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.33",
+        "192.168.1.34",
+        "192.168.1.35",
+        "192.168.1.36"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808387660,
+      "src_interface": 1,
+      "src_ip": [
+        "10.10.10.3"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.37",
+        "192.168.1.38",
+        "192.168.1.39",
+        "192.168.1.40"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808387660,
+      "src_interface": 2,
+      "src_ip": [
+        "10.10.10.3"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.41",
+        "192.168.1.42",
+        "192.168.1.43",
+        "192.168.1.44"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808387660,
+      "src_interface": 3,
+      "src_ip": [
+        "10.10.10.3"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.45",
+        "192.168.1.46",
+        "192.168.1.47",
+        "192.168.1.48"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808387660,
+      "src_interface": 4,
+      "src_ip": [
+        "10.10.10.3"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.49",
+        "192.168.1.50",
+        "192.168.1.51",
+        "192.168.1.52"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808387660,
+      "src_interface": 5,
+      "src_ip": [
+        "10.10.10.3"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.53",
+        "192.168.1.54",
+        "192.168.1.55",
+        "192.168.1.56"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808387660,
+      "src_interface": 6,
+      "src_ip": [
+        "10.10.10.3"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.57",
+        "192.168.1.58",
+        "192.168.1.59",
+        "192.168.1.60"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808387660,
+      "src_interface": 7,
+      "src_ip": [
+        "10.10.10.3"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.61",
+        "192.168.1.62",
+        "192.168.1.63",
+        "192.168.1.64"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808387660,
+      "src_interface": 8,
+      "src_ip": [
+        "10.10.10.3"
+      ]
+    },
+
+
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.65",
+        "192.168.1.66",
+        "192.168.1.67",
+        "192.168.1.68"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808391692,
+      "src_interface": 1,
+      "src_ip": [
+        "10.10.10.9"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.69",
+        "192.168.1.70",
+        "192.168.1.71",
+        "192.168.1.72"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808391692,
+      "src_interface": 2,
+      "src_ip": [
+        "10.10.10.9"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.73",
+        "192.168.1.74",
+        "192.168.1.75",
+        "192.168.1.76"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808391692,
+      "src_interface": 3,
+      "src_ip": [
+        "10.10.10.9"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.77",
+        "192.168.1.78",
+        "192.168.1.79",
+        "192.168.1.80"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808391692,
+      "src_interface": 4,
+      "src_ip": [
+        "10.10.10.9"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.81",
+        "192.168.1.82",
+        "192.168.1.83",
+        "192.168.1.84"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808391692,
+      "src_interface": 5,
+      "src_ip": [
+        "10.10.10.9"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.85",
+        "192.168.1.86",
+        "192.168.1.87",
+        "192.168.1.88"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808391692,
+      "src_interface": 6,
+      "src_ip": [
+        "10.10.10.9"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.89",
+        "192.168.1.90",
+        "192.168.1.91",
+        "192.168.1.92"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808391692,
+      "src_interface": 7,
+      "src_ip": [
+        "10.10.10.9"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.93",
+        "192.168.1.94",
+        "192.168.1.95",
+        "192.168.1.96"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808391692,
+      "src_interface": 8,
+      "src_ip": [
+        "10.10.10.9"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.97",
+        "192.168.1.98",
+        "192.168.1.99",
+        "192.168.1.100"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808380928,
+      "src_interface": 1,
+      "src_ip": [
+        "10.10.10.10"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.101",
+        "192.168.1.102",
+        "192.168.1.103",
+        "192.168.1.104"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808380928,
+      "src_interface": 2,
+      "src_ip": [
+        "10.10.10.10"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.105",
+        "192.168.1.106",
+        "192.168.1.107",
+        "192.168.1.108"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808380928,
+      "src_interface": 3,
+      "src_ip": [
+        "10.10.10.10"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.109",
+        "192.168.1.110",
+        "192.168.1.111",
+        "192.168.1.112"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808380928,
+      "src_interface": 4,
+      "src_ip": [
+        "10.10.10.10"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.113",
+        "192.168.1.114",
+        "192.168.1.115",
+        "192.168.1.116"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808380928,
+      "src_interface": 5,
+      "src_ip": [
+        "10.10.10.10"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.117",
+        "192.168.1.118",
+        "192.168.1.119",
+        "192.168.1.120"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808380928,
+      "src_interface": 6,
+      "src_ip": [
+        "10.10.10.10"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.121",
+        "192.168.1.122",
+        "192.168.1.123",
+        "192.168.1.124"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808380928,
+      "src_interface": 7,
+      "src_ip": [
+        "10.10.10.10"
+      ]
+    },
+    {
+      "dst_dpid": 0,
+      "dst_interface": 0,
+      "dst_ip": [
+        "192.168.1.125",
+        "192.168.1.126",
+        "192.168.1.127",
+        "192.168.1.128"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808380928,
+      "src_interface": 8,
+      "src_ip": [
+        "10.10.10.10"
+      ]
+    },
+
+    {
+      "dst_dpid": 106225808403428,
+      "dst_interface": 21,
+      "dst_ip": [
+        "10.10.10.12"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808402492,
+      "src_interface": 21,
+      "src_ip": [
+        "10.10.10.4"
+      ]
+    },
+    {
+      "dst_dpid": 106225808402492,
+      "dst_interface": 21,
+      "dst_ip": [
+        "10.10.10.4"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808403428,
+      "src_interface": 21,
+      "src_ip": [
+        "10.10.10.12"
+      ]
+    },
+
+    {
+      "dst_dpid": 106225803167444,
+      "dst_interface": 21,
+      "dst_ip": [
+        "10.10.10.13"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808402492,
+      "src_interface": 22,
+      "src_ip": [
+        "10.10.10.4"
+      ]
+    },
+    {
+      "dst_dpid": 106225808402492,
+      "dst_interface": 22,
+      "dst_ip": [
+        "10.10.10.4"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225803167444,
+      "src_interface": 21,
+      "src_ip": [
+        "10.10.10.13"
+      ]
+    },
+
+    {
+      "dst_dpid": 106225808403428,
+      "dst_interface": 22,
+      "dst_ip": [
+        "10.10.10.12"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808387660,
+      "src_interface": 21,
+      "src_ip": [
+        "10.10.10.3"
+      ]
+    },
+    {
+      "dst_dpid": 106225808387660,
+      "dst_interface": 21,
+      "dst_ip": [
+        "10.10.10.3"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808403428,
+      "src_interface": 22,
+      "src_ip": [
+        "10.10.10.12"
+      ]
+    },
+
+    {
+      "dst_dpid": 106225803167444,
+      "dst_interface": 22,
+      "dst_ip": [
+        "10.10.10.13"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808387660,
+      "src_interface": 22,
+      "src_ip": [
+        "10.10.10.3"
+      ]
+    },
+    {
+      "dst_dpid": 106225808387660,
+      "dst_interface": 22,
+      "dst_ip": [
+        "10.10.10.3"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225803167444,
+      "src_interface": 22,
+      "src_ip": [
+        "10.10.10.13"
+      ]
+    },
+
+    {
+      "dst_dpid": 106225808384924,
+      "dst_interface": 21,
+      "dst_ip": [
+        "10.10.10.14"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808391692,
+      "src_interface": 21,
+      "src_ip": [
+        "10.10.10.9"
+      ]
+    },
+    {
+      "dst_dpid": 106225808391692,
+      "dst_interface": 21,
+      "dst_ip": [
+        "10.10.10.9"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808384924,
+      "src_interface": 21,
+      "src_ip": [
+        "10.10.10.14"
+      ]
+    },
+    
+    {
+      "dst_dpid": 106225808398208,
+      "dst_interface": 21,
+      "dst_ip": [
+        "10.10.10.15"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808391692,
+      "src_interface": 22,
+      "src_ip": [
+        "10.10.10.9"
+      ]
+    },
+    {
+      "dst_dpid": 106225808391692,
+      "dst_interface": 22,
+      "dst_ip": [
+        "10.10.10.9"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808398208,
+      "src_interface": 21,
+      "src_ip": [
+        "10.10.10.15"
+      ]
+    },
+
+    {
+      "dst_dpid": 106225808384924,
+      "dst_interface": 22,
+      "dst_ip": [
+        "10.10.10.14"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808380928,
+      "src_interface": 21,
+      "src_ip": [
+        "10.10.10.10"
+      ]
+    },
+    {
+      "dst_dpid": 106225808380928,
+      "dst_interface": 21,
+      "dst_ip": [
+        "10.10.10.10"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808384924,
+      "src_interface": 22,
+      "src_ip": [
+        "10.10.10.14"
+      ]
+    },
+
+    {
+      "dst_dpid": 106225808398208,
+      "dst_interface": 22,
+      "dst_ip": [
+        "10.10.10.15"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808380928,
+      "src_interface": 22,
+      "src_ip": [
+        "10.10.10.10"
+      ]
+    },
+    {
+      "dst_dpid": 106225808380928,
+      "dst_interface": 22,
+      "dst_ip": [
+        "10.10.10.10"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808398208,
+      "src_interface": 22,
+      "src_ip": [
+        "10.10.10.15"
+      ]
+    },
+
+    {
+      "dst_dpid": 14721744660103168000,
+      "dst_interface": 1,
+      "dst_ip": [
+        "10.10.10.18"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808403428,
+      "src_interface": 1,
+      "src_ip": [
+        "10.10.10.12"
+      ]
+    },
+    {
+      "dst_dpid": 106225808403428,
+      "dst_interface": 1,
+      "dst_ip": [
+        "10.10.10.12"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 14721744660103168000,
+      "src_interface": 1,
+      "src_ip": [
+        "10.10.10.18"
+      ]
+    },
+
+    {
+      "dst_dpid": 14721744659231801344,
+      "dst_interface": 1,
+      "dst_ip": [
+        "10.10.10.19"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808403428,
+      "src_interface": 2,
+      "src_ip": [
+        "10.10.10.12"
+      ]
+    },
+    {
+      "dst_dpid": 106225808403428,
+      "dst_interface": 2,
+      "dst_ip": [
+        "10.10.10.12"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 14721744659231801344,
+      "src_interface": 1,
+      "src_ip": [
+        "10.10.10.19"
+      ]
+    },
+
+    {
+      "dst_dpid": 14721744660103168000,
+      "dst_interface": 2,
+      "dst_ip": [
+        "10.10.10.18"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225803167444,
+      "src_interface": 1,
+      "src_ip": [
+        "10.10.10.13"
+      ]
+    },
+    {
+      "dst_dpid": 106225803167444,
+      "dst_interface": 1,
+      "dst_ip": [
+        "10.10.10.13"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 14721744660103168000,
+      "src_interface": 2,
+      "src_ip": [
+        "10.10.10.18"
+      ]
+    },
+
+    {
+      "dst_dpid": 14721744659231801344,
+      "dst_interface": 2,
+      "dst_ip": [
+        "10.10.10.19"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225803167444,
+      "src_interface": 2,
+      "src_ip": [
+        "10.10.10.13"
+      ]
+    },
+    {
+      "dst_dpid": 106225803167444,
+      "dst_interface": 2,
+      "dst_ip": [
+        "10.10.10.13"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 14721744659231801344,
+      "src_interface": 2,
+      "src_ip": [
+        "10.10.10.19"
+      ]
+    },
+
+    {
+      "dst_dpid": 14721744660103168000,
+      "dst_interface": 3,
+      "dst_ip": [
+        "10.10.10.18"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808384924,
+      "src_interface": 1,
+      "src_ip": [
+        "10.10.10.14"
+      ]
+    },
+    {
+      "dst_dpid": 106225808384924,
+      "dst_interface": 1,
+      "dst_ip": [
+        "10.10.10.14"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 14721744660103168000,
+      "src_interface": 3,
+      "src_ip": [
+        "10.10.10.18"
+      ]
+    },
+
+    {
+      "dst_dpid": 14721744659231801344,
+      "dst_interface": 3,
+      "dst_ip": [
+        "10.10.10.19"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808384924,
+      "src_interface": 2,
+      "src_ip": [
+        "10.10.10.14"
+      ]
+    },
+    {
+      "dst_dpid": 106225808384924,
+      "dst_interface": 2,
+      "dst_ip": [
+        "10.10.10.14"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 14721744659231801344,
+      "src_interface": 3,
+      "src_ip": [
+        "10.10.10.19"
+      ]
+    },
+
+    {
+      "dst_dpid": 14721744660103168000,
+      "dst_interface": 4,
+      "dst_ip": [
+        "10.10.10.18"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808398208,
+      "src_interface": 1,
+      "src_ip": [
+        "10.10.10.15"
+      ]
+    },
+    {
+      "dst_dpid": 106225808398208,
+      "dst_interface": 1,
+      "dst_ip": [
+        "10.10.10.15"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 14721744660103168000,
+      "src_interface": 4,
+      "src_ip": [
+        "10.10.10.18"
+      ]
+    },
+
+    {
+      "dst_dpid": 14721744659231801344,
+      "dst_interface": 4,
+      "dst_ip": [
+        "10.10.10.19"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 106225808398208,
+      "src_interface": 2,
+      "src_ip": [
+        "10.10.10.15"
+      ]
+    },
+    {
+      "dst_dpid": 106225808398208,
+      "dst_interface": 2,
+      "dst_ip": [
+        "10.10.10.15"
+      ],
+      "link_bandwidth_bps": 1000000000,
+      "src_dpid": 14721744659231801344,
+      "src_interface": 4,
+      "src_ip": [
+        "10.10.10.19"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "brand_name": "BrocadeICX7250",
+      "device_layer": 3,
+      "device_name": "s1",
+      "nickname": "ofswitch1",
+      "dpid": 106225808402492,
+      "ip": [
+        "10.10.10.4"
+      ],
+      "mac": 0,
+      "smart_plug_ip": "172.25.166.135",
+      "smart_plug_outlet": 5,
+      "vertex_type": 0
+    },
+    {
+      "brand_name": "BrocadeICX7250",
+      "device_layer": 3,
+      "device_name": "s2",
+      "nickname": "ofswitch2",
+      "dpid": 106225808387660,
+      "ip": [
+        "10.10.10.3"
+      ],
+      "mac": 0,
+      "smart_plug_ip": "172.25.166.135",
+      "smart_plug_outlet": 3,
+      "vertex_type": 0
+    },
+    {
+      "brand_name": "BrocadeICX7250",
+      "device_layer": 3,
+      "device_name": "s3",
+      "nickname": "ofswitch3",
+      "dpid": 106225808391692,
+      "ip": [
+        "10.10.10.9"
+      ],
+      "mac": 0,
+      "smart_plug_ip": "172.25.166.136",
+      "smart_plug_outlet": 3,
+      "vertex_type": 0
+    },
+    {
+      "brand_name": "BrocadeICX7250",
+      "device_layer": 3,
+      "device_name": "s4",
+      "nickname": "ofswitch4",
+      "dpid": 106225808380928,
+      "ip": [
+        "10.10.10.10"
+      ],
+      "mac": 0,
+      "smart_plug_ip": "172.25.166.136",
+      "smart_plug_outlet": 4,
+      "vertex_type": 0
+    },
+    {
+      "brand_name": "BrocadeICX7250",
+      "device_layer": 2,
+      "device_name": "s5",
+      "nickname": "ofswitch6",
+      "dpid": 106225808403428,
+      "ip": [
+        "10.10.10.12"
+      ],
+      "mac": 0,
+      "smart_plug_ip": "172.25.166.78",
+      "smart_plug_outlet": 1,
+      "vertex_type": 0
+    },
+    {
+      "brand_name": "BrocadeICX7250",
+      "device_layer": 2,
+      "device_name": "s6",
+      "nickname": "ofswitch7",
+      "dpid": 106225803167444,
+      "ip": [
+        "10.10.10.13"
+      ],
+      "mac": 0,
+      "smart_plug_ip": "172.25.166.78",
+      "smart_plug_outlet": 2,
+      "vertex_type": 0
+    },
+    {
+      "brand_name": "BrocadeICX7250",
+      "device_layer": 2,
+      "device_name": "s7",
+      "nickname": "ofswitch8",
+      "dpid": 106225808384924,
+      "ip": [
+        "10.10.10.14"
+      ],
+      "mac": 0,
+      "smart_plug_ip": "172.25.166.78",
+      "smart_plug_outlet": 3,
+      "vertex_type": 0
+    },
+    {
+      "brand_name": "BrocadeICX7250",
+      "device_layer": 2,
+      "device_name": "s8",
+      "nickname": "ofswitch9",
+      "dpid": 106225808398208,
+      "ip": [
+        "10.10.10.15"
+      ],
+      "mac": 0,
+      "smart_plug_ip": "172.25.166.78",
+      "smart_plug_outlet": 4,
+      "vertex_type": 0
+    },
+    {
+      "brand_name": "BrocadeICX6610",
+      "device_layer": 1,
+      "device_name": "s9",
+      "nickname": "brocade_icx_6610_1",
+      "dpid": 14721744660103168000,
+      "ip": [
+        "10.10.10.18"
+      ],
+      "mac": 0,
+      "smart_plug_ip": "172.25.166.78",
+      "smart_plug_outlet": 5,
+      "vertex_type": 0
+    },
+    {
+      "brand_name": "BrocadeICX6610",
+      "device_layer": 1,
+      "device_name": "s10",
+      "nickname": "brocade_icx_6610_2",
+      "dpid": 14721744659231801344,
+      "ip": [
+        "10.10.10.19"
+      ],
+      "mac": 0,
+      "smart_plug_ip": "172.25.166.78",
+      "smart_plug_outlet": 6,
+      "vertex_type": 0
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h1",
+      "nickname": "h1",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.1",
+        "192.168.1.2",
+        "192.168.1.3",
+        "192.168.1.4"
+      ],
+      "mac": 31362038116569,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h2",
+      "nickname": "h2",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.5",
+        "192.168.1.6",
+        "192.168.1.7",
+        "192.168.1.8"
+      ],
+      "mac": 31362038116568,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h3",
+      "nickname": "h3",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.9",
+        "192.168.1.10",
+        "192.168.1.11",
+        "192.168.1.12"
+      ],
+      "mac": 31362038116570,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h4",
+      "nickname": "h4",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.13",
+        "192.168.1.14",
+        "192.168.1.15",
+        "192.168.1.16"
+      ],
+      "mac": 31362038116571,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h5",
+      "nickname": "h5",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.17",
+        "192.168.1.18",
+        "192.168.1.19",
+        "192.168.1.20"
+      ],
+      "mac": 31362038438982,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h6",
+      "nickname": "h6",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.21",
+        "192.168.1.22",
+        "192.168.1.23",
+        "192.168.1.24"
+      ],
+      "mac": 31362038438983,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h7",
+      "nickname": "h7",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.25",
+        "192.168.1.26",
+        "192.168.1.27",
+        "192.168.1.28"
+      ],
+      "mac": 31362038438984,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h8",
+      "nickname": "h8",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.29",
+        "192.168.1.30",
+        "192.168.1.31",
+        "192.168.1.32"
+      ],
+      "mac": 31362038438985,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h9",
+      "nickname": "h9",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.33",
+        "192.168.1.34",
+        "192.168.1.35",
+        "192.168.1.36"
+      ],
+      "mac": 31362038109890,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h10",
+      "nickname": "h10",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.37",
+        "192.168.1.38",
+        "192.168.1.39",
+        "192.168.1.40"
+      ],
+      "mac": 31362038109889,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h11",
+      "nickname": "h11",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.41",
+        "192.168.1.42",
+        "192.168.1.43",
+        "192.168.1.44"
+      ],
+      "mac": 31362038109891,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h12",
+      "nickname": "h12",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.45",
+        "192.168.1.46",
+        "192.168.1.47",
+        "192.168.1.48"
+      ],
+      "mac": 31362038109892,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h13",
+      "nickname": "h13",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.49",
+        "192.168.1.50",
+        "192.168.1.51",
+        "192.168.1.52"
+      ],
+      "mac": 31362038704234,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h14",
+      "nickname": "h14",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.53",
+        "192.168.1.54",
+        "192.168.1.55",
+        "192.168.1.56"
+      ],
+      "mac": 31362038704235,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h15",
+      "nickname": "h15",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.57",
+        "192.168.1.58",
+        "192.168.1.59",
+        "192.168.1.60"
+      ],
+      "mac": 31362038704236,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h16",
+      "nickname": "h16",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.61",
+        "192.168.1.62",
+        "192.168.1.63",
+        "192.168.1.64"
+      ],
+      "mac": 31362038704237,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h17",
+      "nickname": "h17",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.65",
+        "192.168.1.66",
+        "192.168.1.67",
+        "192.168.1.68"
+      ],
+      "mac": 31362038704194,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h18",
+      "nickname": "h18",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.69",
+        "192.168.1.70",
+        "192.168.1.71",
+        "192.168.1.72"
+      ],
+      "mac": 31362038704195,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h19",
+      "nickname": "h19",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.73",
+        "192.168.1.74",
+        "192.168.1.75",
+        "192.168.1.76"
+      ],
+      "mac": 31362038704196,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h20",
+      "nickname": "h20",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.77",
+        "192.168.1.78",
+        "192.168.1.79",
+        "192.168.1.80"
+      ],
+      "mac": 31362038704197,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h21",
+      "nickname": "h21",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.81",
+        "192.168.1.82",
+        "192.168.1.83",
+        "192.168.1.84"
+      ],
+      "mac": 31362038703242,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h22",
+      "nickname": "h22",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.85",
+        "192.168.1.86",
+        "192.168.1.87",
+        "192.168.1.88"
+      ],
+      "mac": 31362038703243,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h23",
+      "nickname": "h23",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.89",
+        "192.168.1.90",
+        "192.168.1.91",
+        "192.168.1.92"
+      ],
+      "mac": 31362038703244,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h24",
+      "nickname": "h24",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.93",
+        "192.168.1.94",
+        "192.168.1.95",
+        "192.168.1.96"
+      ],
+      "mac": 31362038703245,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h25",
+      "nickname": "h25",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.97",
+        "192.168.1.98",
+        "192.168.1.99",
+        "192.168.1.100"
+      ],
+      "mac": 31362038117125,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h26",
+      "nickname": "h26",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.101",
+        "192.168.1.102",
+        "192.168.1.103",
+        "192.168.1.104"
+      ],
+      "mac": 31362038117124,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h27",
+      "nickname": "h27",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.105",
+        "192.168.1.106",
+        "192.168.1.107",
+        "192.168.1.108"
+      ],
+      "mac": 31362038117126,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h28",
+      "nickname": "h28",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.109",
+        "192.168.1.110",
+        "192.168.1.111",
+        "192.168.1.112"
+      ],
+      "mac": 31362038117127,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h29",
+      "nickname": "h29",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.113",
+        "192.168.1.114",
+        "192.168.1.115",
+        "192.168.1.116"
+      ],
+      "mac": 31362038703330,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h30",
+      "nickname": "h30",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.117",
+        "192.168.1.118",
+        "192.168.1.119",
+        "192.168.1.120"
+      ],
+      "mac": 31362038703331,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h31",
+      "nickname": "h31",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.121",
+        "192.168.1.122",
+        "192.168.1.123",
+        "192.168.1.124"
+      ],
+      "mac": 31362038703332,
+      "vertex_type": 1
+    },
+    {
+      "brand_name": "",
+      "device_layer": 4,
+      "device_name": "h32",
+      "nickname": "h32",
+      "dpid": 0,
+      "ip": [
+        "192.168.1.125",
+        "192.168.1.126",
+        "192.168.1.127",
+        "192.168.1.128"
+      ],
+      "mac": 31362038703333,
+      "vertex_type": 1
+    }
+  ]
+}

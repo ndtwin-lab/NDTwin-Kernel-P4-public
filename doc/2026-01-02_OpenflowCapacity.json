@@ -1,0 +1,44 @@
+{
+  "OVS": {
+    "openflow_versions": ["1.0","1.1","1.2","1.3","1.4","1.5"],
+    "tables": [
+      {
+        "id": 0,
+        "max_entries": 1000000,
+        "matches": ["in_port","eth_src","eth_dst","eth_type","vlan_vid","vlan_pcp","ipv4_src","ipv4_dst","ip_proto","tcp_src","tcp_dst","metadata"],
+        "instructions": ["APPLY_ACTIONS","WRITE_ACTIONS","CLEAR_ACTIONS","GOTO_TABLE","WRITE_METADATA","METER"],
+        "actions": ["OUTPUT","GROUP","DROP","SET_QUEUE","PUSH_MPLS","PUSH_VLAN","POP_MPLS","POP_VLAN","SET_FIELD","DEC_NW_TTL","DEC_MPLS_TTL"]
+      }
+    ],
+    "groups": { "types": ["ALL","SELECT","INDIRECT","FF"] },
+    "meters": { "supported": true, "flags": ["KBPS","BURST","STATS"], "bands": ["DROP","DSCP_REMARK"] }
+  },
+  "BrocadeICX7250": {
+    "openflow_versions": ["1.0","1.3"],
+    "tables": [
+      {
+        "id": 0,
+        "max_entries": 3072,
+        "matches": ["in_port","eth_src","eth_dst","eth_type","ipv4_dst"],
+        "instructions": ["APPLY_ACTIONS", "WRITE_ACTIONS","METER"],
+        "actions": ["OUTPUT","SET_FIELD","DROP","GROUP"]
+      }
+    ],
+    "groups": { "types": ["ALL","INDIRECT","FF"] },
+    "meters": { "supported": true, "flags": ["KBPS","BURST","STATS"], "bands": ["DROP"] }
+  },
+  "HPE5520": {
+    "openflow_versions": ["1.3"],
+    "tables": [
+      {
+        "id": 0,
+        "max_entries": 65535,
+        "matches": ["in_port","eth_type","vlan_vid","ipv4_src","ipv4_dst","ip_proto","tcp_src","tcp_dst"],
+        "instructions": ["APPLY_ACTIONS","WRITE_ACTIONS","METER"],
+        "actions": ["OUTPUT","GROUP","DROP","SET_FIELD", "SET_QUEUE"]
+      }
+    ],
+    "groups": { "types": ["ALL","INDIRECT","FF"] },
+    "meters": { "supported": true, "flags": ["KBPS","BURST","STATS"], "bands": ["DROP"] }
+  }
+}
