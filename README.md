@@ -1,5 +1,10 @@
 # NDTwin-Kernel-P4
 
+> [!CAUTION]
+> **Still under active maintenance — this version is published for testing only.**
+> It is not a release. Expect defects, and treat anything you build on it as provisional:
+> the contents can change without notice when the next snapshot is taken.
+
 The NDTwin Kernel with P4/BMv2 data-plane support: a P4 proxy agent that presents Ryu's
 northbound interface over P4Runtime, the `ndtwin_switch.p4` pipeline, and the Mininet
 topologies that stand a BMv2 fabric up.
