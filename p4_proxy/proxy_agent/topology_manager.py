@@ -33,6 +33,12 @@ from proxy_agent.sflow_emitter import DEFAULT_TOPO_FILE
 #: [Co-developed with claude code -- Adam]
 MAX_REPORTED_FIELDS = 12
 
+#: How much of a single offending match VALUE is echoed back. Same reasoning as
+#: MAX_REPORTED_FIELDS and the same unauthenticated body: a caller can put megabytes behind one
+#: key, and the value is echoed into the proxy's 400 body.
+#: [Co-developed with claude code -- Adam]
+MAX_REPORTED_VALUE_CHARS = 64
+
 
 class UnsupportedMatchError(ValueError):
     """Raised when a match asks for something no table in the pipeline can express."""
@@ -74,6 +80,47 @@ class MalformedMatchError(UnsupportedMatchError):
         # is what the caller needs.
         ValueError.__init__(self, f"match must be a JSON object, got {type(value).__name__}")
         self.fields = []
+
+
+def _describe_match_value(value):
+    """
+    One match value, rendered so it can safely appear in a 400 body.
+
+    [Co-developed with claude code -- Adam]
+    Quotes what the CALLER sent. Bounded for MAX_REPORTED_VALUE_CHARS' reason. A non-string is
+    described by type alone, as MalformedMatchError does: printing the object would illustrate
+    nothing while being unbounded in size.
+    """
+    if not isinstance(value, str):
+        return f"a {type(value).__name__}"
+    if len(value) > MAX_REPORTED_VALUE_CHARS:
+        return f'"{value[:MAX_REPORTED_VALUE_CHARS]}..." ({len(value)} characters)'
+    return f'"{value}"'
+
+
+class MalformedMatchValueError(UnsupportedMatchError):
+    """
+    Raised when a field the pipeline DOES key on carries a value it cannot encode.
+
+    [Co-developed with claude code -- Adam]
+    unsupported_match_fields validates field *names*; this is for the value behind one. A
+    subclass for the same reason MalformedMatchError is one: api_routes catches only
+    UnsupportedMatchError, and this has to land in that catch to become a 400 rather than
+    escaping to FastAPI as a 500.
+    """
+
+    def __init__(self, field, value, action, expected):
+        self.fields = [field]
+        # A small integer is shown as itself: "a int" would not tell a caller which of 512 and
+        # 70000 it sent. `action` is the past participle of what the caller asked for, so the
+        # sentence names what did NOT happen.
+        shown = (str(value) if isinstance(value, int) and not isinstance(value, bool)
+                 and abs(value) < 10 ** 12 else _describe_match_value(value))
+        ValueError.__init__(
+            self,
+            f"match field {field} carries {shown}, which is not {expected}. "
+            f"No rule was " + action
+        )
 
 
 def parse_eth_type(value):
@@ -139,6 +186,52 @@ FIVE_TUPLE_FIELD_MAP = {
 #: routing all of them through a ternary table instead would change the behaviour of the entire
 #: fabric to deliver a feature nobody asked it for.
 FIVE_TUPLE_ONLY_FIELDS = frozenset(FIVE_TUPLE_FIELD_MAP) - HONOURED_MATCH_FIELDS
+
+#: The match spellings that land on flow_5tuple's ingress-port key (bit<9>). Derived from
+#: FIVE_TUPLE_FIELD_MAP. [Co-developed with claude code -- Adam]
+IN_PORT_MATCH_FIELDS = frozenset(
+    field for field, p4_key in FIVE_TUPLE_FIELD_MAP.items()
+    if p4_key == "standard_metadata.ingress_port"
+)
+
+
+def _check_in_port_value(field, value, action):
+    """MalformedMatchValueError unless the 5-tuple encoder takes this in_port.
+
+    [Co-developed with claude code -- Adam]
+    The oracle is P4RuntimeClient._encode_5tuple_value itself, so the accepted set (0-511, or a
+    numeric string of one) cannot drift from what the writer puts on the wire. Imported here and
+    not at the top: p4_client is the heavy module (gRPC, protobuf) and only a match that names
+    in_port needs it.
+    """
+    from proxy_agent.p4_client import P4RuntimeClient
+    try:
+        P4RuntimeClient._encode_5tuple_value(FIVE_TUPLE_FIELD_MAP[field], value)
+    except (ValueError, OverflowError, TypeError, OSError):
+        raise MalformedMatchValueError(
+            field, value, action,
+            expected="a switch port number from 0 to 511 (the key is 9 bits wide)") from None
+
+
+def check_match_values(match_dict, action):
+    """
+    Raises MalformedMatchValueError if an in_port carries a value the 5-tuple encoder rejects.
+
+    [Co-developed with claude code -- Adam]
+    The key is bit<9>, and the writer refuses 512 and up with an OverflowError raised while it
+    builds the request, which no handler catches (a 500), so the encoder is called here, ahead
+    of the writer. Nothing is skipped when falsy: a match naming in_port goes to flow_5tuple
+    whatever its value, and `None` and `""` were 500s before.
+
+    Covers in_port ONLY. The other numeric flow_5tuple keys (ip_proto, tp_src/tp_dst and their
+    spellings) and the address fields are unchanged by this check.
+    """
+    if not isinstance(match_dict, dict):
+        return
+    for field in sorted(match_dict):
+        if field in IN_PORT_MATCH_FIELDS:
+            _check_in_port_value(field, match_dict[field], action)
+
 
 #: Sent on essentially every IPv4 rule. Validated below, but not a key: ipv4_lpm is IPv4 by
 #: construction, so eth_type 0x0800 is a tautology and anything else is unrepresentable.
@@ -712,6 +805,11 @@ class TopologyManager:
                   f"neither table can honour {bad}")
             raise UnsupportedMatchError(bad)
 
+        # The field names are expressible; an in_port value still has to fit its key, or the
+        # writer's OverflowError leaves the handler as a 500. Ahead of the no-OUTPUT early return,
+        # so a bad in_port answers 400 there too. [Co-developed with claude code -- Adam]
+        check_match_values(match_dict, "installed")
+
         # Parse match (OpenFlow JSON)
         # NDTwin sends: {"dl_type": 2048, "nw_dst": "10.0.0.1"}
         ipv4_dst = match_dict.get("nw_dst") or match_dict.get("ipv4_dst")
@@ -790,6 +888,9 @@ class TopologyManager:
                   f"neither table can honour {bad}")
             raise UnsupportedMatchError(bad)
 
+        # [Co-developed with claude code -- Adam] As route_flow.
+        check_match_values(match_dict, "deleted")
+
         client = self.switches[dpid]
         ipv4_dst = match_dict.get("nw_dst") or match_dict.get("ipv4_dst")
 
@@ -830,6 +931,9 @@ class TopologyManager:
             print(f"[TopologyManager] Refusing modify for DPID {dpid}: "
                   f"neither table can honour {bad}")
             raise UnsupportedMatchError(bad)
+
+        # [Co-developed with claude code -- Adam] As route_flow.
+        check_match_values(match_dict, "modified")
 
         client = self.switches[dpid]
         ipv4_dst = match_dict.get("nw_dst") or match_dict.get("ipv4_dst")

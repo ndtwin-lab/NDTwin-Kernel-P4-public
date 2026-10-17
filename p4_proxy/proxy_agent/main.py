@@ -1,5 +1,9 @@
 import asyncio
+import errno
+import ipaddress
 import os
+import socket
+import sys
 import threading
 import uvicorn
 from fastapi import FastAPI
@@ -352,7 +356,151 @@ async def shutdown_event():
                   f"({type(e).__name__}: {e}); continuing shutdown")
     sflow.close()
 
+#: The address the HTTP API listens on. Loopback unless the operator says otherwise.
+#:
+#: [Co-developed with claude code -- Adam]
+#: The API has no authentication, and it can do real damage to the fabric: `POST /p4/readopt/{dpid}`
+#: re-pushes the pipeline (which empties the switch's tables), and `/stats/flowentry/*` writes
+#: rules. It used to bind 0.0.0.0, so anyone who could reach the machine could call them. Every
+#: consumer in this repo (the kernel's `P4_PROXY_IP_AND_PORT = "localhost:8081"`, `ndt`,
+#: `stack.sh`) runs on the same machine, so loopback costs them nothing. To listen elsewhere, set
+#: NDTWIN_PROXY_HOST (`0.0.0.0` for every interface, or one address) -- and put your own access
+#: control in front.
+HOST_ENV_VAR = "NDTWIN_PROXY_HOST"
+DEFAULT_HOST = "127.0.0.1"
+PORT = 8081
+
+
+def listen_host(env=None) -> str:
+    """The address to listen on: NDTWIN_PROXY_HOST when set and non-empty, else loopback."""
+    if env is None:
+        env = os.environ
+    return (env.get(HOST_ENV_VAR) or "").strip() or DEFAULT_HOST
+
+
+def _is_loopback(host: str) -> bool:
+    """Whether `host` (a numeric address) is loopback; ::ffff:127.0.0.1 counts as 127.0.0.1."""
+    try:
+        ip = ipaddress.ip_address(host.split("%", 1)[0])
+    except ValueError:
+        return False
+    mapped = getattr(ip, "ipv4_mapped", None)
+    return (mapped or ip).is_loopback
+
+
+def _is_wildcard(host: str) -> bool:
+    try:
+        return ipaddress.ip_address(host.split("%", 1)[0]).is_unspecified
+    except ValueError:
+        return False
+
+
+def _hostport(host: str, port: int) -> str:
+    return f"[{host}]:{port}" if ":" in host else f"{host}:{port}"
+
+
+def _refuse(text: str):
+    print(text, file=sys.stderr)
+    sys.exit(1)
+
+
+def _refuse_port_taken(port: int, detail: str):
+    _refuse(
+        f"[Proxy Agent] REFUSING to start: port {port} is already in use ({detail}).\n"
+        f"[Proxy Agent] Another proxy agent is almost certainly running. This process has\n"
+        f"[Proxy Agent] NOT connected to any switch and has NOT installed any rules --\n"
+        f"[Proxy Agent] two agents writing to the same BMv2 fabric corrupt each other's\n"
+        f"[Proxy Agent] forwarding state, and `curl :{port}` would answer from the other one.\n"
+        f"[Proxy Agent] Stop the running agent first, or free port {port}.")
+
+
+def _answers_on_loopback(port: int):
+    """'127.0.0.1' or '::1' when something already accepts connections there on `port`, else None.
+
+    [Co-developed with claude code -- Adam]
+    Binding one address does not conflict with a listener on another: a proxy on 127.0.0.1 and
+    a second one asked for ::1 (or one LAN address) would both bind. The proxy's own clients
+    and every other proxy start through loopback, so loopback is where a running agent is
+    looked for before a non-wildcard address is bound."""
+    for family, addr in ((socket.AF_INET, "127.0.0.1"), (socket.AF_INET6, "::1")):
+        try:
+            probe = socket.socket(family, socket.SOCK_STREAM)
+        except OSError:  # no IPv6 here
+            continue
+        try:
+            probe.settimeout(0.5)
+            if probe.connect_ex((addr, port)) == 0:
+                return addr
+        except OSError:
+            pass
+        finally:
+            probe.close()
+    return None
+
+
+def claim_listen_socket(host: str = None, port: int = PORT):
+    """
+    Take the listening socket before uvicorn is allowed to run the app.
+
+    [Co-developed with claude code -- Adam]
+    uvicorn runs the ASGI lifespan *before* it binds -- `server.py:103-104` awaits
+    `lifespan.startup()` and the bind comes afterwards; the ordering is the same in every
+    uvicorn installed here (0.49.0, 0.51.0, 0.52.1), so it is not a version quirk. This
+    proxy's startup event opens gRPC channels, pushes pipeline config and installs forwarding
+    rules, which means a second instance launched against a taken port writes to the fabric
+    first and discovers it cannot serve second. Measured: ten `Setting Forwarding Pipeline
+    Config...` calls, LLDP discovery started and the link watchdog seeded, all before
+    `[Errno 98] address already in use`.
+
+    So the guard cannot live in uvicorn's bind-failure path -- by the time that runs, the
+    damage is done. It has to be here, ahead of `Server.run`.
+
+    The socket is handed to uvicorn rather than closed and re-bound, because closing it would
+    reopen exactly the race this exists to remove.
+    """
+    if host is None:
+        host = listen_host()
+    # A numeric address only (AI_NUMERICHOST): a hostname would resolve to whichever address the
+    # resolver lists first, and a typo would otherwise fail somewhere less obvious.
+    try:
+        family, _type, _proto, _canon, sockaddr = socket.getaddrinfo(
+            host, port, type=socket.SOCK_STREAM,
+            flags=socket.AI_PASSIVE | socket.AI_NUMERICHOST)[0]
+        sock = socket.socket(family, socket.SOCK_STREAM)
+    except OSError as exc:
+        _refuse(f"[Proxy Agent] REFUSING to start: {HOST_ENV_VAR}={host!r} is not an address "
+                f"this machine can listen on ({exc}). Use a numeric IPv4 or IPv6 address, "
+                f"or leave it unset for {DEFAULT_HOST}.")
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    if not _is_wildcard(host):
+        taken = _answers_on_loopback(port)
+        if taken:
+            sock.close()
+            _refuse_port_taken(port, f"something answers on {_hostport(taken, port)}")
+    try:
+        sock.bind(sockaddr)
+    except OSError as exc:
+        sock.close()
+        if exc.errno == errno.EADDRINUSE:
+            _refuse_port_taken(port, exc.strerror)
+        _refuse(f"[Proxy Agent] REFUSING to start: cannot listen on {HOST_ENV_VAR}={host!r} "
+                f"port {port} ({exc.strerror}). Is the address assigned to this machine?")
+    sock.listen(2048)
+    bound_host, bound_port = sock.getsockname()[:2]
+    print(f"[Proxy Agent] HTTP API listening on {_hostport(bound_host, bound_port)}", flush=True)
+    if not _is_loopback(bound_host):
+        print(f"[Proxy Agent] WARNING: {bound_host} is not loopback, and this API has no "
+              f"authentication: anything that can reach it can re-push pipelines and write "
+              f"rules. Drop {HOST_ENV_VAR} to listen on {DEFAULT_HOST} only.", file=sys.stderr)
+    return sock
+
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8081)
+    listen_sock = claim_listen_socket()
+    # uvicorn is told the address the socket actually holds, not a second reading of the
+    # setting. With `sockets=` it serves on that socket and ignores host/port (and prints no
+    # "running on" line), so the line claim_listen_socket printed is the record of the address.
+    _host, _port = listen_sock.getsockname()[:2]
+    uvicorn.Server(uvicorn.Config(app, host=_host, port=_port)).run(sockets=[listen_sock])
 
 # Developed in collaboration with Gemini 3.1 Pro.
