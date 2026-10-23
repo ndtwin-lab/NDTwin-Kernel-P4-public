@@ -47,7 +47,8 @@ sys.path.append(NTG_DIR)
 from mininet.net import Mininet
 from mininet.log import setLogLevel
 
-from p4_testbed_topo import (MANIFEST_PATH, MultiSwitchTopo, _host_count_override,
+from p4_testbed_topo import (MANIFEST_PATH, Bmv2HostError, MultiSwitchTopo,
+                             _host_count_override, bmv2_host_lines, bmv2_listen_host,
                              disable_host_offloads, reap_manifest_switches,
                              resolve_bmv2_launcher, verify_switches, write_manifest)
 
@@ -80,13 +81,25 @@ def main() -> None:
         fail(str(e))
     print(f"bmv2 binary: {binary}" + (f"  (LD_LIBRARY_PATH={lib_dir})" if lib_dir else ""))
 
+    # [Co-developed with claude code -- Adam]
+    # The gRPC listen address, asked once and refused here (NDTWIN_BMV2_HOST names something
+    # unsupported) rather than after `mn -c` below has torn the running fabric down; the same
+    # answer is handed to the topology so nothing reads the environment again.
+    try:
+        bmv2_host = bmv2_listen_host()
+    except Bmv2HostError as e:
+        fail(str(e))
+    for line in bmv2_host_lines(bmv2_host):
+        print(line)
+
     # Reset exactly the way p4_testbed_topo.main does: mn -c does not touch bmv2, and an
     # orphaned switch holding its gRPC port kills this run's twin with "Address already in use".
     os.system('sudo mn -c > /dev/null 2>&1')
     os.system('sudo pkill -f simple_switch_grpc > /dev/null 2>&1')
     time.sleep(0.5)
 
-    net = Mininet(topo=MultiSwitchTopo(), controller=None, autoSetMacs=True)
+    net = Mininet(topo=MultiSwitchTopo(grpc_host=bmv2_host), controller=None,
+                  autoSetMacs=True)
     net.start()
 
     # Static ARPs between the hosts, as the plain topology does.
