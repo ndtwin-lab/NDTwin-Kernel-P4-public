@@ -54,12 +54,11 @@ add_compile_options(
 )
 
 # [Co-developed with claude code -- Adam]
-# GCC 13 at -O3 reports -Wmaybe-uninitialized from inside Boost.Graph's adj_list_edge_iterator
-# (an end iterator's cached out-edge range is never read, but GCC cannot prove it) and from fmt
-# when it formats locals in FlowLinkUsageCollector. It fires in our sources and tests, and one
-# site is inside Boost's own adjacency_list code, which no change to our loops can reach. Keep the
-# warning visible, but do not let it fail an optimised GCC build. Debug builds, and so CI, are
-# unchanged; clang is unaffected.
+# GCC 13 at -O3 reports -Wmaybe-uninitialized from inside Boost.Graph's adj_list_edge_iterator:
+# an end iterator's cached out-edge range is never read, but GCC cannot prove it. It fires in our
+# loops and tests, and one site is inside Boost's own adjacency_list code, which no change to our
+# loops can reach. Keep the warning visible, but do not let it fail an optimised GCC build.
+# Debug builds, and so CI, are unchanged; clang is unaffected.
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     add_compile_options($<$<NOT:$<CONFIG:Debug>>:-Wno-error=maybe-uninitialized>)
 endif()
