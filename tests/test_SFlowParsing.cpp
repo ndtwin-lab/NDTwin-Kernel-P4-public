@@ -192,8 +192,8 @@ class SFlowParsingFixture : public ::testing::Test
     /// Discards the collector and its accumulated flow table. Tests that feed several
     /// datagrams and assert on the table after each one need a clean slate between feeds,
     /// otherwise the first feed's flows satisfy the next feed's assertion.
-    /// The mode defaults to MININET; the HPE expanded-sample tests use TESTBED, the mode a
-    /// hardware switch reports in. [Co-developed with claude code -- Adam]
+    /// The mode defaults to MININET; the HPE expanded-sample tests use TESTBED, the mode the
+    /// kernel runs in against hardware switches. [Co-developed with claude code -- Adam]
     void resetCollector(utils::DeploymentMode mode = utils::DeploymentMode::MININET)
     {
         auto bus = std::make_shared<EventBus>();
@@ -540,13 +540,16 @@ TEST_F(SFlowParsingFixture, CountsEveryMalformedDatagramEvenThoughLoggingIsRateL
 //    switch record first, then the raw packet header record, as the bmv2 emitter and OVS
 //    send it (compare tests/fixtures/emitted_icmp_unreachable.bin). Untagged Ethernet.
 //  - sFlow v5 flow_sample_expanded (format 3), the HPE path: source id, input and output
-//    each take two words, so the raw header starts at word 19 of the sample. The HPE
+//    each take two words, so the sampled header bytes start at word 19 of the sample. The HPE
 //    branch's fixed offsets (ethertype at +23, IPv4 protocol at +25, L4 at +28) line up with
 //    an 802.1Q-tagged frame, so the frame here carries one VLAN tag.
 //
-// ICMP code is a full byte. Codes up to 15 cover every code assigned for type 3, which is
-// why a mask that keeps only the low nibble survived real traffic; 0x1F is a synthetic code
-// that exercises the high nibble. The parser does not validate code values.
+// ICMP type and code are a full byte each. In the IANA ICMP registry the only assigned code
+// above 15 is type 9 code 16 (router advertisement, "does not route common traffic"), so a
+// mask that keeps the low nibble of the code survived almost all real traffic. Type 253 is
+// the RFC 3692-style experiment type and has no codes registered; 253 / 0xA5 sets bit 7 of
+// both bytes, so a mask narrower than 0xFF on either field fails. The parser does not
+// validate type or code values.
 
 namespace
 {
@@ -642,7 +645,7 @@ class SFlowIcmpFieldsTest : public SFlowParsingFixture
         EXPECT_EQ(table.size(), 1u) << "expected exactly one flow from one ICMP sample";
         for (const auto& [key, info] : table)
         {
-            EXPECT_EQ(key.protocol, 1);
+            EXPECT_EQ(int(key.protocol), 1);
             EXPECT_EQ(key.srcIP, inet_addr("10.0.0.1"));
             EXPECT_EQ(key.dstIP, inet_addr("10.0.0.2"));
             return key;
@@ -654,16 +657,24 @@ class SFlowIcmpFieldsTest : public SFlowParsingFixture
 
 TEST_F(SFlowIcmpFieldsTest, StandardSampleKeepsTypeAndLowCode)
 {
+    // Guards the standard layout's word offset for type and a code below 16.
     const auto key = onlyIcmpKey(standardIcmpDatagram(3, 13), utils::DeploymentMode::MININET);
     EXPECT_EQ(key.srcPort, 3) << "ICMP type";
     EXPECT_EQ(key.dstPort, 13) << "ICMP code";
 }
 
-TEST_F(SFlowIcmpFieldsTest, StandardSampleKeepsTheWholeCodeByte)
+TEST_F(SFlowIcmpFieldsTest, StandardSampleKeepsTheAssignedCodeAbove15)
 {
-    const auto key = onlyIcmpKey(standardIcmpDatagram(3, 0x1F), utils::DeploymentMode::MININET);
-    EXPECT_EQ(key.srcPort, 3) << "ICMP type";
-    EXPECT_EQ(key.dstPort, 0x1F) << "ICMP code";
+    const auto key = onlyIcmpKey(standardIcmpDatagram(9, 16), utils::DeploymentMode::MININET);
+    EXPECT_EQ(key.srcPort, 9) << "ICMP type";
+    EXPECT_EQ(key.dstPort, 16) << "ICMP code";
+}
+
+TEST_F(SFlowIcmpFieldsTest, StandardSampleKeepsBothFullBytes)
+{
+    const auto key = onlyIcmpKey(standardIcmpDatagram(253, 0xA5), utils::DeploymentMode::MININET);
+    EXPECT_EQ(key.srcPort, 253) << "ICMP type";
+    EXPECT_EQ(key.dstPort, 0xA5) << "ICMP code";
 }
 
 TEST_F(SFlowIcmpFieldsTest, ExpandedSampleKeepsTypeAndLowCode)
@@ -673,11 +684,18 @@ TEST_F(SFlowIcmpFieldsTest, ExpandedSampleKeepsTypeAndLowCode)
     EXPECT_EQ(key.dstPort, 13) << "ICMP code";
 }
 
-TEST_F(SFlowIcmpFieldsTest, ExpandedSampleKeepsTheWholeCodeByte)
+TEST_F(SFlowIcmpFieldsTest, ExpandedSampleKeepsTheAssignedCodeAbove15)
 {
-    const auto key = onlyIcmpKey(expandedIcmpDatagram(11, 0x1F), utils::DeploymentMode::TESTBED);
-    EXPECT_EQ(key.srcPort, 11) << "ICMP type";
-    EXPECT_EQ(key.dstPort, 0x1F) << "ICMP code";
+    const auto key = onlyIcmpKey(expandedIcmpDatagram(9, 16), utils::DeploymentMode::TESTBED);
+    EXPECT_EQ(key.srcPort, 9) << "ICMP type";
+    EXPECT_EQ(key.dstPort, 16) << "ICMP code";
+}
+
+TEST_F(SFlowIcmpFieldsTest, ExpandedSampleKeepsBothFullBytes)
+{
+    const auto key = onlyIcmpKey(expandedIcmpDatagram(253, 0xA5), utils::DeploymentMode::TESTBED);
+    EXPECT_EQ(key.srcPort, 253) << "ICMP type";
+    EXPECT_EQ(key.dstPort, 0xA5) << "ICMP code";
 }
 
 TEST_F(SFlowIcmpFieldsTest, ExpandedSampleKeepsEchoRequest)
