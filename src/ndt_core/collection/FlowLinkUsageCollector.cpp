@@ -1285,8 +1285,10 @@ FlowLinkUsageCollector::handlePacket(char* buffer, size_t len)
                 }
                 else
                 {
+                    // ICMP type and code are the first two bytes of the L4 header, a full
+                    // byte each. [Co-developed with claude code -- Adam]
                     icmpType = (ntohl(data[index + 24]) >> 8) & 0xFF;
-                    icmpCode = ntohl(data[index + 24]) & 0xF;
+                    icmpCode = ntohl(data[index + 24]) & 0xFF;
                 }
             }
             else
@@ -1343,8 +1345,11 @@ FlowLinkUsageCollector::handlePacket(char* buffer, size_t len)
                 }
                 else
                 {
-                    icmpType = ntohl(data[index + 28] >> 8) & 0xFF;
-                    icmpCode = ntohl(data[index + 28]) & 0xF;
+                    // Byte-swap before shifting: shifting the network-order word first
+                    // yields 0 for the type on a little-endian host. The code is a full
+                    // byte. [Co-developed with claude code -- Adam]
+                    icmpType = (ntohl(data[index + 28]) >> 8) & 0xFF;
+                    icmpCode = ntohl(data[index + 28]) & 0xFF;
                 }
             }
 
