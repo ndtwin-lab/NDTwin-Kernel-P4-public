@@ -1275,7 +1275,10 @@ FlowLinkUsageCollector::handlePacket(char* buffer, size_t len)
                     dstPort = (ntohl(data[index + 25]) >> 16) & 0xFFFF;
                     if (protocol == 6)
                     {
-                        uint8_t tcpFlags = (ntohl(data[index + 28]) >> 8) & 0xFF;
+                        // TCP flags are TCP header byte 13: frame byte 47, the last byte
+                        // of word +27. Word +28 bits 15..8 is the checksum's high byte.
+                        // [Co-developed with claude code -- Adam]
+                        uint8_t tcpFlags = ntohl(data[index + 27]) & 0xFF;
 
                         if (tcpFlags & TCP_ACK_FLAG)
                         {
@@ -1335,7 +1338,9 @@ FlowLinkUsageCollector::handlePacket(char* buffer, size_t len)
                     dstPort = (ntohl(data[index + 12 + 6 + 7 + 4]) >> 16) & 0xFFFF;
                     if (protocol == 6) // It's a TCP packet
                     {
-                        uint8_t tcpFlags = (ntohl(data[index + 32]) >> 8) & 0xFF;
+                        // TCP flags are TCP header byte 13: tagged-frame byte 51, the
+                        // last byte of word +31. [Co-developed with claude code -- Adam]
+                        uint8_t tcpFlags = ntohl(data[index + 31]) & 0xFF;
 
                         if (tcpFlags & TCP_ACK_FLAG)
                         {
