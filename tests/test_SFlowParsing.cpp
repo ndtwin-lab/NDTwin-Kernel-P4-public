@@ -79,6 +79,24 @@ class DatagramBuilder
         return *this;
     }
 
+    /// Appends opaque bytes (a sampled frame header) in wire order, zero-padded to a whole
+    /// word as sFlow requires. [Co-developed with claude code -- Adam]
+    DatagramBuilder& octets(const std::vector<uint8_t>& bytes)
+    {
+        for (size_t i = 0; i < bytes.size(); i += 4)
+        {
+            uint8_t chunk[4] = {0, 0, 0, 0};
+            for (size_t j = 0; j < 4 && i + j < bytes.size(); ++j)
+            {
+                chunk[j] = bytes[i + j];
+            }
+            uint32_t w = 0;
+            std::memcpy(&w, chunk, sizeof(w));
+            m_words.push_back(w);
+        }
+        return *this;
+    }
+
     /// Mutable byte buffer, since handlePacket takes char*.
     std::vector<char> bytes() const
     {
@@ -174,17 +192,18 @@ class SFlowParsingFixture : public ::testing::Test
     /// Discards the collector and its accumulated flow table. Tests that feed several
     /// datagrams and assert on the table after each one need a clean slate between feeds,
     /// otherwise the first feed's flows satisfy the next feed's assertion.
-    void resetCollector()
+    /// The mode defaults to MININET; the HPE expanded-sample tests use TESTBED, the mode a
+    /// hardware switch reports in. [Co-developed with claude code -- Adam]
+    void resetCollector(utils::DeploymentMode mode = utils::DeploymentMode::MININET)
     {
         auto bus = std::make_shared<EventBus>();
         auto monitor = std::make_shared<TopologyAndFlowMonitor>(
             std::make_shared<Graph>(),
             std::make_shared<std::shared_mutex>(),
             bus,
-            utils::DeploymentMode::MININET);
+            mode);
         m_collector = std::make_unique<TestableCollector>(
-            monitor, bus, std::make_shared<ndtClassifier::Classifier>(),
-            utils::DeploymentMode::MININET);
+            monitor, bus, std::make_shared<ndtClassifier::Classifier>(), mode);
     }
 
     /// Feeds a datagram to the parser. Returns normally iff the parser did.
@@ -504,6 +523,169 @@ TEST_F(SFlowParsingFixture, CountsEveryMalformedDatagramEvenThoughLoggingIsRateL
     }
 
     EXPECT_EQ(m_collector->malformedDatagramCount(), before + 50);
+}
+
+// =====================================================================================
+// ICMP type and code extraction, both flow-sample formats
+// =====================================================================================
+//
+// [Co-developed with claude code -- Adam]
+//
+// The parser carries ICMP type in FlowKey::srcPort and code in FlowKey::dstPort (see
+// test_SFlowEmitterRoundtrip.cpp). These tests build one ICMP sample per datagram, with a
+// known type and code, in each of the two flow-sample formats the parser accepts, and check
+// both fields come back as sent:
+//
+//  - sFlow v5 flow_sample (format 1), in the shape the Mininet path expects: an extended
+//    switch record first, then the raw packet header record, as the bmv2 emitter and OVS
+//    send it (compare tests/fixtures/emitted_icmp_unreachable.bin). Untagged Ethernet.
+//  - sFlow v5 flow_sample_expanded (format 3), the HPE path: source id, input and output
+//    each take two words, so the raw header starts at word 19 of the sample. The HPE
+//    branch's fixed offsets (ethertype at +23, IPv4 protocol at +25, L4 at +28) line up with
+//    an 802.1Q-tagged frame, so the frame here carries one VLAN tag.
+//
+// ICMP code is a full byte. Codes up to 15 cover every code assigned for type 3, which is
+// why a mask that keeps only the low nibble survived real traffic; 0x1F is a synthetic code
+// that exercises the high nibble. The parser does not validate code values.
+
+namespace
+{
+
+/// Ethernet + IPv4 + 8-byte ICMP header, 10.0.0.1 -> 10.0.0.2, optionally 802.1Q-tagged.
+std::vector<uint8_t> icmpFrame(uint8_t icmpType, uint8_t icmpCode, bool vlanTagged)
+{
+    std::vector<uint8_t> f = {0x00, 0x00, 0x00, 0x00, 0x00, 0x02,  // dst MAC
+                              0x00, 0x00, 0x00, 0x00, 0x00, 0x01}; // src MAC
+    if (vlanTagged)
+    {
+        f.insert(f.end(), {0x81, 0x00, 0x00, 0x64}); // TPID, TCI (VLAN 100)
+    }
+    f.insert(f.end(), {0x08, 0x00}); // IPv4
+    f.insert(f.end(),
+             {0x45, 0x00, 0x00, 0x1c, // version/IHL, TOS, total length 28
+              0x00, 0x01, 0x00, 0x00, // id, flags/fragment offset 0
+              0x40, 0x01, 0x00, 0x00, // TTL, protocol ICMP, checksum
+              10,   0,    0,    1,    // src
+              10,   0,    0,    2});  // dst
+    f.insert(f.end(), {icmpType, icmpCode, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01});
+    return f;
+}
+
+size_t paddedWords(size_t byteCount) { return (byteCount + 3) / 4; }
+
+/// One flow_sample (format 1) laid out the way the Mininet-mode parser reads it.
+DatagramBuilder standardIcmpDatagram(uint8_t icmpType, uint8_t icmpCode)
+{
+    const auto frame = icmpFrame(icmpType, icmpCode, false);
+    const size_t hdrWords = paddedWords(frame.size());
+    DatagramBuilder b;
+    b.header(1);
+    b.word(1);                              // flow_sample
+    b.word(4 * (8 + 6 + 6 + hdrWords));     // sample length
+    b.word(1);                              // sequence number
+    b.word(0x02000002);                     // source id
+    b.word(256);                            // sampling rate
+    b.word(256);                            // sample pool
+    b.word(0);                              // drops
+    b.word(2);                              // input
+    b.word(4);                              // output
+    b.word(2);                              // flow records
+    b.word(1001).word(16).words(4);         // extended switch record
+    b.word(1);                              // raw packet header record
+    b.word(4 * (4 + hdrWords));             // record length
+    b.word(1);                              // header protocol: Ethernet
+    b.word(static_cast<uint32_t>(frame.size()) + 4); // frame length (incl. FCS)
+    b.word(4);                              // stripped
+    b.word(static_cast<uint32_t>(frame.size()));     // header length
+    b.octets(frame);
+    return b;
+}
+
+/// One flow_sample_expanded (format 3), the HPE layout.
+DatagramBuilder expandedIcmpDatagram(uint8_t icmpType, uint8_t icmpCode)
+{
+    const auto frame = icmpFrame(icmpType, icmpCode, true);
+    const size_t hdrWords = paddedWords(frame.size());
+    DatagramBuilder b;
+    b.header(1);
+    b.word(3);                              // flow_sample_expanded
+    b.word(4 * (11 + 2 + 4 + hdrWords));    // sample length
+    b.word(1);                              // sequence number
+    b.word(0).word(2);                      // source id type, index
+    b.word(256);                            // sampling rate
+    b.word(256);                            // sample pool
+    b.word(0);                              // drops
+    b.word(0).word(2);                      // input format, value
+    b.word(0).word(4);                      // output format, value
+    b.word(1);                              // flow records
+    b.word(1);                              // raw packet header record
+    b.word(4 * (4 + hdrWords));             // record length
+    b.word(1);                              // header protocol: Ethernet
+    b.word(static_cast<uint32_t>(frame.size()) + 4); // frame length (incl. FCS)
+    b.word(4);                              // stripped
+    b.word(static_cast<uint32_t>(frame.size()));     // header length
+    b.octets(frame);
+    return b;
+}
+
+} // namespace
+
+class SFlowIcmpFieldsTest : public SFlowParsingFixture
+{
+  protected:
+    /// Feeds one datagram to a fresh collector and returns the single ICMP key it produced.
+    sflow::FlowKey onlyIcmpKey(const DatagramBuilder& b, utils::DeploymentMode mode)
+    {
+        resetCollector(mode);
+        feed(b);
+        const auto table = m_collector->getFlowInfoTable();
+        EXPECT_EQ(table.size(), 1u) << "expected exactly one flow from one ICMP sample";
+        for (const auto& [key, info] : table)
+        {
+            EXPECT_EQ(key.protocol, 1);
+            EXPECT_EQ(key.srcIP, inet_addr("10.0.0.1"));
+            EXPECT_EQ(key.dstIP, inet_addr("10.0.0.2"));
+            return key;
+        }
+        ADD_FAILURE() << "no flow extracted";
+        return {};
+    }
+};
+
+TEST_F(SFlowIcmpFieldsTest, StandardSampleKeepsTypeAndLowCode)
+{
+    const auto key = onlyIcmpKey(standardIcmpDatagram(3, 13), utils::DeploymentMode::MININET);
+    EXPECT_EQ(key.srcPort, 3) << "ICMP type";
+    EXPECT_EQ(key.dstPort, 13) << "ICMP code";
+}
+
+TEST_F(SFlowIcmpFieldsTest, StandardSampleKeepsTheWholeCodeByte)
+{
+    const auto key = onlyIcmpKey(standardIcmpDatagram(3, 0x1F), utils::DeploymentMode::MININET);
+    EXPECT_EQ(key.srcPort, 3) << "ICMP type";
+    EXPECT_EQ(key.dstPort, 0x1F) << "ICMP code";
+}
+
+TEST_F(SFlowIcmpFieldsTest, ExpandedSampleKeepsTypeAndLowCode)
+{
+    const auto key = onlyIcmpKey(expandedIcmpDatagram(3, 13), utils::DeploymentMode::TESTBED);
+    EXPECT_EQ(key.srcPort, 3) << "ICMP type";
+    EXPECT_EQ(key.dstPort, 13) << "ICMP code";
+}
+
+TEST_F(SFlowIcmpFieldsTest, ExpandedSampleKeepsTheWholeCodeByte)
+{
+    const auto key = onlyIcmpKey(expandedIcmpDatagram(11, 0x1F), utils::DeploymentMode::TESTBED);
+    EXPECT_EQ(key.srcPort, 11) << "ICMP type";
+    EXPECT_EQ(key.dstPort, 0x1F) << "ICMP code";
+}
+
+TEST_F(SFlowIcmpFieldsTest, ExpandedSampleKeepsEchoRequest)
+{
+    // Type 8 code 0, the commonest ICMP sample (ping).
+    const auto key = onlyIcmpKey(expandedIcmpDatagram(8, 0), utils::DeploymentMode::TESTBED);
+    EXPECT_EQ(key.srcPort, 8) << "ICMP type";
+    EXPECT_EQ(key.dstPort, 0) << "ICMP code";
 }
 
 // =====================================================================================
