@@ -1201,7 +1201,9 @@ FlowLinkUsageCollector::handlePacket(char* buffer, size_t len)
             uint32_t inputPort, outputPort, frameLength;
             uint8_t protocol;
             uint32_t srcIp, dstIp;
-            uint16_t srcPort, dstPort, icmpType, icmpCode;
+            // Each pair is set only on its own protocol's branch; the trace logs below print both.
+            // [Co-developed with claude code -- Adam]
+            uint16_t srcPort = 0, dstPort = 0, icmpType = 0, icmpCode = 0;
             uint32_t flowDataLength = 0;
             uint32_t samplingRate = ntohl(data[index + 4]);
 
