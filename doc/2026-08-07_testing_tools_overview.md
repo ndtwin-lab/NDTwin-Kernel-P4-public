@@ -107,9 +107,9 @@ grep -rhE '^(TEST|TEST_F|TEST_P)\(' tests --include='*.cpp' | wc -l   # C++ case
 | 目錄 | 直譯器 | 可用什麼 | skip 的意義 |
 |---|---|---|---|
 | `p4_proxy/tests/` | `p4_proxy/venv/bin/python`（`components.env` 的 `P4_PROXY_PY`；runner 會依序試它、`p4dev-python-venv`、`python3`，挑第一個 import 得到 P4Runtime protobufs 的） | 第三方套件（grpc、networkx、hypothesis…） | 缺 protobufs 或缺編譯好的 p4info 時 skip，回報為 **PROVED LESS**；兩個前置都在卻還 skip 則是 **FAIL** |
-| `tests/python/` | **系統 `python3`，只准標準庫** | 標準庫，就這樣 | **任何 skip 都是 FAIL**——這裡的測試不依賴 python3 以外的任何東西，所以沒有 skip 的正當理由 |
+| `tests/python/` | runner 依序試 `RYU_PY`、`~/miniconda3/envs/ryu-env/bin/python`、`P4_PROXY_PY`、`python3`，挑第一個 import 得到 networkx＋ryu 的；都沒有就用 `python3` | 多數只用標準庫；walk 測試要 networkx，`test_topology_read_timeouts.py`／`test_topology_worker_coalescing.py` 要 ryu（只有 ryu-env 有，Ryu 4.34 要 Python 3.8） | **skip 是 FAIL**。唯一例外：檔案用 `# NDTWIN_L1_NEEDS: ryu` 宣告需要 ryu、整檔都 skip、lane 自己探測這台缺 networkx＋ryu、而且這台是 hosted CI runner（`CI` 或 `GITHUB_ACTIONS` 為 `true`）時，判 **DECLARED SKIP**（單獨列出，不算 pass）；其他機器上同一個 skip 照樣 FAIL，並點名缺的是什麼。`tests/shell/` 沒有這個例外 |
 
-2026-08-13 踩過一次：在 `tests/python/` 底下的測試 import 了 networkx，系統 python3 沒有，整個檔案在 import 期就死掉，runner 讀到 `ran=0` 判 FAIL。**要寫依賴第三方套件的測試，它就不屬於 `tests/python/`。** 這條界線是刻意的：`tests/python/` 涵蓋 OVS/Ryu 那半邊與測試工具本身，必須在一台只有裸 python3 的機器上能跑。
+2026-08-13 踩過一次：在 `tests/python/` 底下的測試 import 了 networkx，系統 python3 沒有，整個檔案在 import 期就死掉，runner 讀到 `ran=0` 判 FAIL。**要寫依賴第三方套件的測試，它就不屬於 `tests/python/`。** 這條界線是刻意的：`tests/python/` 涵蓋 OVS/Ryu 那半邊與測試工具本身，必須在一台只有裸 python3 的機器上能跑。（後來放寬：networkx 與 ryu 由 runner 挑的直譯器提供，見上表；沒有它們的機器上，只有宣告了 `NDTWIN_L1_NEEDS` 的檔案能在 hosted CI runner 上 skip。）
 
 ⚠️ **shell 測試的摘要格式是硬性介面。** runner 用 `grep -oE '^Ran [0-9]+'` 抓執行數（`l1_unit_tests.sh`），所以每個 `tests/shell/test_*.sh` 結尾必須印：
 
@@ -507,7 +507,7 @@ tools/test_workflow/local_ci.sh gcc asan     # 指名 job
 |---|---|---|---|
 | `tests/test_*.cpp` | gtest，編成 `test_routing_strategy` | GCC（`gcc` job）、clang（只 build）、ASan、TSan | ctest **與**直接執行，兩者都要 |
 | `p4_proxy/tests/test_*.py` | unittest（**不是** pytest） | `p4_proxy/venv/bin/python`，可用第三方套件 | `l1_unit_tests.sh` |
-| `tests/python/test_*.py` | unittest | **系統 `python3`，只准標準庫** | `l1_unit_tests.sh`。⚠️ **沒有**被 ctest 註冊 |
+| `tests/python/test_*.py` | unittest | runner 挑的直譯器（networkx＋ryu 優先，見上方表格） | `l1_unit_tests.sh`。⚠️ **沒有**被 ctest 註冊 |
 | `tests/shell/test_*.sh` | 純 stub，透過 seam 驅動流程腳本，不碰環境、秒級 | bash | `l1_unit_tests.sh`。⚠️ **沒有**被 ctest 註冊；摘要必須是 `Ran N checks, ...` |
 | `tests/fuzz/fuzz_sflow.cpp` | libFuzzer harness | **clang only**，`-DFUZZING=ON`，預設 OFF | 手動；不在任何驅動裡 |
 | `tests/fixtures/*.bin` | 真實 OVS + Ryu + Mininet 抓取的 sFlow 封包 | — | L1 的 golden fixtures **兼** fuzz 的 seed corpus |

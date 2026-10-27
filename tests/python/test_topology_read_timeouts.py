@@ -3,7 +3,7 @@
 [Co-developed with claude code -- Adam]
 
 WHY THIS EXISTS. `get_link`'s ceiling shipped in cce9c5d with no runtime evidence of any kind:
-across every log in doc/audit the string "Link list unavailable after timeout" appears zero times.
+across every log of the runs the string "Link list unavailable after timeout" appears zero times.
 Phase 2 measured seven aborts and 28 timeouts and all of them were the get_switch exit above it,
 so the get_link branch is the one product path here that has never executed. A comment on it was
 already wrong once for exactly that reason -- it claimed seven rounds had taken it.
@@ -29,6 +29,10 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
+# [Co-developed with claude code -- Adam] The skip below is excused on a machine with no Ryu
+# env (a hosted runner), and only there: l1_unit_tests.sh probes its own interpreter for
+# networkx+ryu, and where that probe succeeds a skip here is still a failure.
+# NDTWIN_L1_NEEDS: ryu
 try:
     import networkx as nx                                        # noqa: E402
     from ryu.lib import hub                                      # noqa: E402
@@ -105,7 +109,7 @@ def _blocks_forever(*_a, **_k):
 @unittest.skipUnless(HAVE_RYU,
                      "needs the ryu conda env (ryu-env/bin/python); this interpreter has no ryu/networkx")
 class GetLinkTimeoutTest(unittest.TestCase):
-    """The branch with no runtime evidence anywhere in doc/audit."""
+    """The branch with no runtime evidence in any run log."""
 
     def setUp(self):
         self.real = (ir.get_switch, ir.get_link)
