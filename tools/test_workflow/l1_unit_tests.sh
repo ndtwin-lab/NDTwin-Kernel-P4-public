@@ -30,7 +30,13 @@
 # limitation rather than a broken test. There are exactly two such prerequisites and the run
 # computes both: an interpreter carrying the P4Runtime protobufs ($PY_P4), and the compiled P4
 # artefacts that l0_build_check.sh writes to $P4_BUILD_DIR. Anything else that skips fails,
-# whether the whole file skipped or one test in it.
+# whether the whole file skipped or one test in it -- apart from test_p4_client.py, which declares
+# NDTWIN_L1_OPT_IN (needs a live switch) and is reported SKIPPED without the lane checking for one.
+#
+# The kernel-side tests (tests/python, tests/shell) fail on any skip, with one exception: a
+# tests/python file whose every test skipped, that declares a need (NDTWIN_L1_NEEDS) this run's
+# own probe finds missing, on a hosted CI runner. That is a DECLARED SKIP, never a pass; see
+# "declared needs" below.
 #
 # [Co-developed with claude code -- Adam]
 # That last clause used to be false for a strict subset of skips. The all-skipped branch below
@@ -55,6 +61,100 @@ if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
     R=$'\033[31m'; G=$'\033[32m'; Y=$'\033[33m'; D=$'\033[2m'; N=$'\033[0m'
 else
     R=''; G=''; Y=''; D=''; N=''
+fi
+
+# --- declared needs (tests/python) ----------------------------------------------------
+# [Co-developed with claude code -- Adam]
+# Any skip in tests/python or tests/shell used to be a failure. That is right on a machine with the
+# Ryu env and wrong on a hosted runner, which has none: Ryu 4.34 needs its own Python 3.8 env, so the
+# two suites that drive real Ryu greenlets skip there and CI was red for that alone. The p4_proxy
+# section already tells "this machine lacks X" from "the file chose not to run" by probing X itself;
+# this is the same move for the kernel side.
+#
+# A file declares what it needs on a comment line of its own:
+#
+#     # NDTWIN_L1_NEEDS: ryu
+#
+# and the LANE decides, by probing its own interpreter (L1_NEED_MET below), whether the need is
+# met. A skip is excused only when all of these hold:
+#   * the file is a unittest file in tests/python and EVERY test in it skipped (a file that ran some
+#     of its tests had what it needed, so a partial skip is some other skip);
+#   * it declared a need, the lane has a probe for that need, and the probe failed here (a word with
+#     no probe -- a typo -- excuses nothing);
+#   * this is a hosted CI runner (CI or GITHUB_ACTIONS is "true"). Anywhere else a missing declared
+#     need is still a failure that names the need, so a lab machine that loses its Ryu env reads red.
+# An excused file is a DECLARED SKIP: its own line, listed again at the end, never counted as a
+# pass. The lane does not read the skip message; the machines where the excuse never applies are
+# what catch a file that skips for some other reason.
+
+# L1_NEED_MET[<need>] -- 1 met, 0 missing. A need with no entry has no probe and excuses nothing.
+declare -gA L1_NEED_MET=()
+
+# l1_declared_needs <file> -- the needs a .py file declares, one per line, sorted, no duplicates.
+# Read with Python's tokenizer, so only a real comment on a line of its own counts: the form quoted
+# in a docstring or a string, or after code, is not a declaration. A file the tokenizer cannot read,
+# and any file that is not .py, declares nothing.
+l1_declared_needs() {
+    [[ "$1" == *.py ]] || return 0
+    python3 - "$1" 2>/dev/null <<'PY' | tr ', \t' '\n\n\n' | sed '/^$/d' | sort -u
+import io, re, sys, tokenize
+pat = re.compile(r"#\s*NDTWIN_L1_NEEDS:\s*(.*)$")
+src = open(sys.argv[1], encoding="utf-8", errors="replace").read()
+lines = src.splitlines()
+try:
+    for tok in tokenize.generate_tokens(io.StringIO(src).readline):
+        if tok.type != tokenize.COMMENT:
+            continue
+        row, col = tok.start
+        if lines[row - 1][:col].strip():
+            continue                            # after code on the same line
+        m = pat.match(tok.string)
+        if m:
+            print(m.group(1))
+except (tokenize.TokenError, SyntaxError):
+    pass
+PY
+}
+
+# l1_hosted_runner -- echo 1 on a hosted CI runner (CI or GITHUB_ACTIONS is "true"), 0 otherwise.
+l1_hosted_runner() {
+    [[ "${CI:-}" == true || "${GITHUB_ACTIONS:-}" == true ]] && echo 1 || echo 0
+}
+
+# l1_skip_excuse <file> <ran> <skipped> -- echo the declared needs this machine lacks, space-joined;
+# echo nothing when the skip has no excuse (see the rules above).
+l1_skip_excuse() {
+    local file="$1" ran="${2:-0}" skipped="${3:-0}" need missing=()
+    [[ "$file" == *.py && "$skipped" -gt 0 && "$skipped" -eq "$ran" ]] || return 0
+    while IFS= read -r need; do
+        case "${L1_NEED_MET[$need]-unprobed}" in
+            0)        missing+=("$need") ;;
+            unprobed) return 0 ;;
+        esac
+    done < <(l1_declared_needs "$file")
+    (( ${#missing[@]} )) && echo "${missing[*]}"
+    return 0
+}
+
+# l1_kernel_verdict <rc> <ran> <skipped> <excuse> <hosted> -- one token for a kernel-side file.
+# Order matters: a non-zero exit is never excused, and a skip is checked before "ran 0" because a
+# shell suite that skips exits before printing its summary.
+l1_kernel_verdict() {
+    local rc="$1" ran="$2" skipped="$3" excuse="${4:-}" hosted="${5:-0}"
+    if   [[ "$rc" -ne 0 ]]; then echo FAIL-RC
+    elif [[ "$skipped" -gt 0 && -n "$excuse" && "$hosted" == 1 ]]; then echo DECLARED-SKIP
+    elif [[ "$skipped" -gt 0 ]]; then echo FAIL-SKIP
+    elif [[ "$ran" -eq 0 ]]; then echo NO-TESTS-RAN
+    else echo PASS
+    fi
+}
+
+# Sourced with NDTWIN_L1_LIB_ONLY=1 (tests/shell/test_l1_declared_needs.sh), stop here: functions
+# only, no build, no logs. Executed with it set, refuse: exiting 0 there would pass having run nothing.
+if [[ -n "${NDTWIN_L1_LIB_ONLY:-}" ]]; then
+    return 0 2>/dev/null
+    echo "l1_unit_tests.sh: NDTWIN_L1_LIB_ONLY is only for sourcing this file; unset it to run the lane" >&2
+    exit 2
 fi
 
 DO_BUILD=1
@@ -282,10 +382,17 @@ for candidate in "$RYU_PY" "$HOME/miniconda3/envs/ryu-env/bin/python" "$P4_PROXY
         PY_KERNEL="$candidate"; break
     fi
 done
-if ! "$PY_KERNEL" -c "import networkx, ryu" >/dev/null 2>&1; then
+# [Co-developed with claude code -- Adam] The needs a file here may declare (NDTWIN_L1_NEEDS), each
+# probed with the interpreter the files will actually run under. Only `ryu` has a probe.
+L1_NEED_MET[ryu]=0
+"$PY_KERNEL" -c "import networkx, ryu" >/dev/null 2>&1 && L1_NEED_MET[ryu]=1
+L1_HOSTED="$(l1_hosted_runner)"
+DECLARED_SKIPS=()
+if [[ "${L1_NEED_MET[ryu]}" -eq 0 ]]; then
     # Say which one, because "N skip(s)" below names the symptom and not the cause.
     echo "  ${Y}note${N} ${D}no interpreter with networkx+ryu found; suites needing them will" \
-         "skip, and this lane counts a skip as a failure. Set RYU_PY to override.${N}"
+         "skip -- excused only on a hosted CI runner, and only where they declare it" \
+         "(NDTWIN_L1_NEEDS: ryu). Set RYU_PY to override.${N}"
 fi
 shopt -s nullglob
 KERNEL_TESTS=("$KERNEL_DIR"/tests/python/test_*.py "$KERNEL_DIR"/tests/shell/test_*.sh)
@@ -313,9 +420,8 @@ else
         # vocabulary to a shell script silently measures nothing. All three problems here were
         # found by agy-review 0117; the previous version had one code path for both.
         #
-        # "Ran N" counts skipped tests, so N > 0 does not mean anything was asserted. Nothing in
-        # this directory may skip for an environment reason when $PY_KERNEL carries networkx --
-        # the walk suites' guards are then inert -- so a skip is still a broken test.
+        # "Ran N" counts skipped tests, so N > 0 does not mean anything was asserted. A skip here
+        # is a broken test unless the declared-needs rules above excuse it.
         ran=$(grep -oE '^Ran [0-9]+' "$log" | tail -1 | grep -oE '[0-9]+')
         ran=${ran:-0}
         if [[ "$testfile" == *.py ]]; then
@@ -333,23 +439,50 @@ else
             skipped=$(grep -cE "^[[:space:]]*SKIP:" "$log")
             skip_evidence='^[[:space:]]*SKIP:'
         fi
-        if [[ $rc -ne 0 ]]; then
+        # [Co-developed with claude code -- Adam] which of its declared needs this machine lacks
+        # (empty: no excuse), computed by the lane, never taken from the file's skip message.
+        excuse="$(l1_skip_excuse "$testfile" "$ran" "${skipped:-0}")"
+        verdict="$(l1_kernel_verdict "$rc" "$ran" "${skipped:-0}" "$excuse" "$L1_HOSTED")"
+        case "$verdict" in
+        FAIL-RC)
             echo "${R}FAIL${N} (exit $rc, ran=$ran)"
             grep -E "^(FAIL|ERROR):|AssertionError|FAILED " "$log" | head -8 | sed 's/^/      /'
             FAILURES=$((FAILURES + 1))
-        elif [[ ${skipped:-0} -gt 0 ]]; then
+            ;;
+        DECLARED-SKIP)
+            # Not a pass and not a failure: this machine lacks what the file said it needs, and the
+            # lane checked that itself. Listed again at the end so it is not lost in the scroll.
+            echo "${Y}DECLARED SKIP${N} ${skipped} skip(s); needs ${excuse}, which this machine" \
+                 "lacks -- proved nothing here"
+            grep -E "$skip_evidence" "$log" | head -3 | sed 's/^/      /'
+            DECLARED_SKIPS+=("$name (needs $excuse)")
+            ;;
+        FAIL-SKIP)
             # Checked before the ran-eq-0 branch: a shell test that skips exits before printing a
             # summary, so it would otherwise be reported as "no tests ran" and the real reason lost.
-            echo "${R}FAIL${N} ${skipped} skip(s) — nothing in tests/python or tests/shell has a" \
-                 "reason to skip"
+            if [[ -n "$excuse" ]]; then
+                echo "${R}FAIL${N} ${skipped} skip(s) — needs ${excuse}, which this machine lacks;" \
+                     "only a hosted CI runner may skip for that"
+            else
+                echo "${R}FAIL${N} ${skipped} skip(s) — and no need it declares (NDTWIN_L1_NEEDS)" \
+                     "is missing here, so nothing excuses it"
+            fi
             grep -E "$skip_evidence" "$log" | head -5 | sed 's/^/      /'
             FAILURES=$((FAILURES + 1))
-        elif [[ $ran -eq 0 ]]; then
+            ;;
+        NO-TESTS-RAN)
             echo "${Y}NO TESTS RAN${N} ${D}(see $log)${N}"
             FAILURES=$((FAILURES + 1))
-        else
+            ;;
+        PASS)
             echo "${G}PASS${N} ${D}${ran} ran and passed${N}"
-        fi
+            ;;
+        *)
+            # A token the verdict should never produce, or none at all: never a pass.
+            echo "${R}FAIL${N} unexpected verdict '${verdict}' (rc=$rc ran=$ran skipped=${skipped:-0})"
+            FAILURES=$((FAILURES + 1))
+            ;;
+        esac
     done
 fi
 
@@ -370,6 +503,13 @@ fi
 
 echo
 echo "======================================================================"
+# [Co-developed with claude code -- Adam] Declared skips are reported whatever the verdict, and never
+# folded into the pass line: a file excused here asserted nothing on this machine.
+if (( ${#DECLARED_SKIPS[@]} )); then
+    echo "${Y}${#DECLARED_SKIPS[@]} file(s) skipped for a need this machine lacks -- not counted" \
+         "as passes:${N}"
+    printf '  %s\n' "${DECLARED_SKIPS[@]}"
+fi
 if [[ $FAILURES -gt 0 ]]; then
     echo "${R}L1 FAILED ($FAILURES problem group(s))${N}   logs: $LOG_DIR"
     exit 1
