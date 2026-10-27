@@ -20,7 +20,7 @@ repo 外的一組連結。所以這份索引取代分區——標記地位，不
 
 ---
 
-## 先讀這三份
+## 先讀這兩份
 
 | 檔案 | 為什麼是它 |
 |---|---|
@@ -63,8 +63,7 @@ repo 外的一組連結。所以這份索引取代分區——標記地位，不
 
 | 檔案 | 地位 | 下一步是誰 |
 |---|---|---|
-| [2026-08-16_delivery-package/](2026-08-16_delivery-package/) | **待轉交** | **Adam**：NTG 三條給 NTG 維護者、手冊條目與三條勘誤給 patty。三檔已定稿、內部前言已移除 |
-| [2026-08-15_bmv2-performance-build-public-manual-draft.md](2026-08-15_bmv2-performance-build-public-manual-draft.md) | 草稿（原稿） | 同上 |
+| [2026-08-16_delivery-package/](2026-08-16_delivery-package/) | **待轉交** | 安裝手冊的維護者：bmv2 效能 build 的手冊條目（`bmv2-manual-entry.md`，目錄裡只有這一份） |
 
 ## 廠商參考（baseline 時期）
 

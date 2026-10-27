@@ -78,8 +78,10 @@ fabric, full NDTwin stack running, iperf3, 2026-08:
 Published figures are consistent in magnitude but not directly transferable — build
 flags and topology dominate. Chen, Hu & Jin (SIGSIM-PADS '23) report ~170 Mbps for
 `simple_switch_grpc` (16-switch linear topology; build conditions unstated) and up to
-~1 Gbps for non-gRPC `simple_switch`; upstream's `docs/performance.md` reports
-~917 Mbps for a single switch with the recommended flags. Measure your own fabric
+~1 Gbps for non-gRPC `simple_switch`; upstream's `docs/performance.md`, on an AWS
+c4.2xlarge for its `simple_router.p4` benchmark, expects around 1 Gbps (80,000 pps) for a
+single `simple_switch` with its recommended flags, and its example run's median is 1047 Mbps.
+Measure your own fabric
 before relying on any of these numbers.
 
 ### References

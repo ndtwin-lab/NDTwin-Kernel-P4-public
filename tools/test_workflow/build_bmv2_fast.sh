@@ -9,10 +9,13 @@
 # macros and the nanomsg event logger enabled (p4-guide's default; config.log:7 in the source
 # tree records the invocation verbatim). Literature puts simple_switch_grpc around ~170 Mbps
 # (SIGSIM-PADS '23; when this script was written this machine's saturation point had not been
-# measured), while upstream's own docs/performance.md prescribes exactly the flags below and reports
-# ~917 Mbps with them. Measured here 2026-08-15, stock vs this build over a 3-hop path: 1400 B UDP
-# delivered ceiling ~40-42 vs ~460-530 Mbps, TCP single flow 24.2 vs 431.0 Mbps, 64 B packets
-# ~3,619 vs ~50,786 pps. [Co-developed with claude code -- Adam]
+# measured), while upstream's own docs/performance.md prescribes 'CXXFLAGS=-g -O3'
+# 'CFLAGS=-g -O3' --disable-logging-macros --disable-elogger (the compiler flags below add
+# -DNDEBUG, -march=native and, for C++, -fno-semantic-interposition) and says that on an AWS
+# c4.2xlarge, for its simple_router.p4 benchmark, one simple_switch built that way should reach
+# around 1 Gbps, or 80,000 pps (its example run's median: 1047 Mbps). Measured
+# here 2026-08-15, stock vs this build over a 3-hop path: 1400 B UDP delivered ceiling ~40-42 vs
+# ~460-530 Mbps, TCP single flow 24.2 vs 431.0 Mbps, 64 B packets ~3,619 vs ~50,786 pps. [Co-developed with claude code -- Adam]
 #
 # ⚠️ Read before running (decision points, not folklore):
 #   1. Upstream warns this exact flag set "cannot be used to achieve passing results on all

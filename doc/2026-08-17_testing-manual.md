@@ -225,9 +225,8 @@ for port in 6653, 6633:
 探測全滅 → fallback 6653 → switch 對著死埠撥，**而且任何 log 都不會提到 port**，
 你只會看到拓撲永不收斂。
 
-🔴 同一條假警告還躺在另外兩個地方，都還沒改：`tools/test_workflow/stack.sh:660-669`
-的註解、以及 `doc/2026-08-16_delivery-package/docs-errata.md` 的第 1 條。
-**那份勘誤在轉交給 patty 之前必須把第 1 條刪掉**，否則會去「修」一份本來就對的官方文件。
+〔2026-10-25 補：同一條假警告原本還在另外兩個地方，兩處都已更正：`tools/test_workflow/stack.sh`
+的啟動順序註解 2026-08-21 改成「6633 旗標不會弄壞任何東西」，勘誤清單裡的那一條 2026-08-27 撤回。〕
 </details>
 
 ⚠️ **官方手冊（ndtwin.org/docs）仍有一處與本機不符**：`sudo ./testbed_topo.py` 會走到
