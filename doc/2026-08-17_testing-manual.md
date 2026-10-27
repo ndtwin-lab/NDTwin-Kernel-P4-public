@@ -7,8 +7,7 @@
 它被讀的速度快。§2 之所以是例外，是因為開機的失敗模式沒有一個長得像失敗，短寫等於不寫。
 **§2 裡「為什麼」一律收在摺疊區**，跳過摺疊區就能一路照著打完。
 
-**適用範圍**：本 repo（kernel + P4 proxy）。跨元件串接看
-`doc/2026-08-14_cross-component-integration-matrix.md`。
+**適用範圍**：本 repo（kernel + P4 proxy）。跨元件串接不在這份手冊的範圍。
 
 [Co-developed with claude code -- Adam]
 

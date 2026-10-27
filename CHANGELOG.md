@@ -17,7 +17,6 @@ and every `/ndt/` metric work without modification.
 Progress, remaining work and the per-phase plan: `doc/2026-07-27_p4_bmv2_support_plan.md`.
 Test procedure and measured results: `doc/2026-07-29_p4_status_and_test_guide.md`.
 Machine-specific setup traps: `doc/2026-07-29_environment_gotchas.md`.
-What is still open: `doc/2026-07-29_HANDOFF.md`.
 
 ### Fixed (crashes and silent failures)
 
@@ -397,7 +396,7 @@ add" cases, malformed parameters answering 500, and `poll()` with a 0 ms timeout
 at idle. Every one is *silent* — nothing crashes, nothing logs, every endpoint answers 200 — which
 is why the premise looked right. So this work is **two** things, and fixing the shared-path
 correctness defects was a prerequisite for the other, because a baseline that lies cannot verify a
-new data plane. See `doc/2026-07-29_HANDOFF.md` and the note below on the Ryu wedge for the clearest example.
+new data plane. See the note below on the Ryu wedge for the clearest example.
 
 ### 1. Correctness defects in the shared kernel path (affect OVS and P4 alike)
 

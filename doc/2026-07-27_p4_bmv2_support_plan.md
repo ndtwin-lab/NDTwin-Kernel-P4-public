@@ -105,8 +105,8 @@ Phase 5 的規格寫了**兩種** sample：
    host 是最明顯的症狀，因為**它完全沒有 push 路徑**：switch 走 `/ndt/inform_switch_entered`、
    link 失效走 `/ndt/link_failure_detected`，但**沒有任何東西 push host**。
 
-   已改成定期輪詢（前 90 秒每 5 秒、之後每 30 秒）。詳細的驗證過程、以及第一版輪詢讓圖不斷增長的
-   那個 bug，見 `doc/2026-07-29_HANDOFF.md` §2 的 `get_graph_data` 條目。
+   已改成定期輪詢（前 90 秒每 5 秒、之後每 30 秒）。第一版輪詢曾讓圖不斷增長，
+   見下一段。
 
    仍然成立的一點：**vertex 是用 MAC 比對的**（`findVertexByMac`，沒有 IP 也能成功），只有 **edge 用
    IP**（`findEdgeByHostIp`），所以那個 early `continue` 比它下面的程式碼實際需要的更嚴格。這一點沒有
@@ -124,7 +124,7 @@ Phase 5 的規格寫了**兩種** sample：
    `run()` 現在定期輪詢：前 90 秒每 5 秒、之後每 30 秒（`TopologyAndFlowMonitor.cpp` 的 `run()`，常數 `kWhileConverging` / `kOnceConverged` / `kConvergingFor`）。
    「kernel 最後開並等收斂」這條操作規則保留，但理由換了 —— 現在只是為了圖早點完整，不再是
    「錯過就永遠不知道」。第一版輪詢曾讓圖不斷增長（`loadStaticTopologyFromFile` 是新增不是對帳），
-   已拆開並讓它拒絕第二次載入，詳見 `2026-07-29_HANDOFF.md` §2。
+   已拆開並讓它拒絕第二次載入。
 
 5. **OVS 模式需要 Ryu 多載兩個 stock app**（已修進 `stack.sh`）：`ryu.app.rest_topology` 提供
    `/v1.0/topology/*`，`ryu.app.ofctl_rest` 提供 `/stats/flow/<dpid>` 和 `/stats/flowentry/*`。
@@ -524,7 +524,7 @@ proxy 用 networkx 重算出來、**沒有裝進任何一台 switch** 的路。*
 > | 誠實的 `OpResult` | ✅ 兩個操作都是；`powerOn` 的 502 訊息會講出真正有效的復原路徑——**直接打 `POST /p4/readopt/{dpid}`**（`3a312e3`）。⚠️ 這一欄先前寫「off 再 on」，**實跑證明那個也回 500**（`2abf1e3` 拿行不通的建議換了沒驗證過的建議） |
 > | 依賴 Phase 6 的真實存活偵測 | ✅ Phase 6 已完成 |
 > | 測試：mock 攔住 `executeSystemCommand`，確認只針對一個 PID 且不含 `pkill -f` | ✅ `tests/test_P4PowerStrategy.cpp`，mutation 驗證過 |
-> | 順手修好 `OVSPowerStrategy` 繞過自己虛擬函式的接口 | ✅ 已修，見 `2026-07-29_HANDOFF.md` 的覆蓋率表 |
+> | 順手修好 `OVSPowerStrategy` 繞過自己虛擬函式的接口 | ✅ 已修 |
 >
 > **Live 驗證已於 2026-08-12 完成**（helper 已安裝、sudoers 已設）。核心要求通過：關掉一台、
 > 其他九台 **9000/9000 封包零遺失**，關掉的那台在 helper 回報 stopped 前 0.3 秒就停止轉送。

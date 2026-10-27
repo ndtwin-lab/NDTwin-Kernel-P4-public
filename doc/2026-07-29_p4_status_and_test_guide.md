@@ -3,7 +3,7 @@
 > 📍 **歷史文件（2026-08-17 標記）**：現役入口是
 > [2026-08-17_testing-manual.md](2026-08-17_testing-manual.md)。這一份的「目前進度」是
 > **2026-07-30 的**現況，Phase 7/8 之後已大幅過時；保留是為了追溯 P4 支援怎麼演進。
-> 要現在的狀態看 `2026-07-27_p4_bmv2_support_plan.md` 與 `2026-07-29_HANDOFF.md`。
+> 要現在的狀態看 `2026-07-27_p4_bmv2_support_plan.md`。
 
 對應計畫：[2026-07-27_p4_bmv2_support_plan.md](2026-07-27_p4_bmv2_support_plan.md)　測試分層定義：[2026-07-27_testing_workflow.md](2026-07-27_testing_workflow.md)
 環境陷阱（sudo 設定、`pgrep` 數錯、清理殘留、啟動順序）：[2026-07-29_environment_gotchas.md](2026-07-29_environment_gotchas.md)
@@ -677,7 +677,7 @@ bmv2 fabric 本身也證實能端到端轉發（`ping` 0% loss、`ttl=59` 證實
 真存活偵測、失效鏈路雙邊排除、路徑轉換時推送都在。**圖是活的。**
 
 現在還不能相信的是**別的東西**：Phase 6 剩下的兩件實機驗證（`seed_expected_links` 接收側的
-port 假設、失效鏈路在 kernel 圖裡是否真的維持 down）、Phase 3／7／8，以及 HANDOFF §2c 那個
+port 假設、失效鏈路在 kernel 圖裡是否真的維持 down）、Phase 3／7／8，以及那個
 「Ryu 在錯的啟動順序下永久回空表」——**那一個會讓所有健康指標全綠而 flow table 全錯。**
 
 [Co-developed with claude code -- Adam]

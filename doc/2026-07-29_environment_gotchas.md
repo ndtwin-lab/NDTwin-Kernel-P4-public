@@ -252,7 +252,7 @@ port（`mininet/node.py:1551`）。那條規則管不到**中途重啟**，而�
 
 後果：**資料平面完全正常**（實測每台 130 條規則、`is_connected: true`），但 kernel 的
 `fetchOpenFlowTablesInternal` 讀的是 Ryu 的視角，餵給 Classifier —— 所以**每條 flow 的 `path`
-都是空的，而網路其實好好地在轉封包**。詳細分析和四個被推翻的假設見 `2026-07-29_HANDOFF.md` 第 2c 節。
+都是空的，而網路其實好好地在轉封包**。根因至今未證實，四個假設都被推翻了（見 `CHANGELOG.md` 的 Ryu flow-stats wedge 一節）。
 
 > **完整規則：先 Ryu 再 Mininet；而且不要中途單獨重啟 Ryu —— 要重啟就兩個一起。**
 

@@ -5,8 +5,8 @@ into BMv2Switch.start().
 
 [Co-developed with claude code -- Adam]
 
-Contract under test (from the seam's stated purpose, the A/B performance plan in
-doc/2026-08-15_bmv2-performance-report.md):
+Contract under test (from the seam's stated purpose: the stock vs fast build A/B
+measurement of 2026-08-15):
   * no override file        -> stock bare name, no LD_LIBRARY_PATH (pre-seam behavior)
   * valid override          -> that binary; sibling ../lib auto-derived when present
   * commented-out override  -> stock (commenting the line out disables the override)
