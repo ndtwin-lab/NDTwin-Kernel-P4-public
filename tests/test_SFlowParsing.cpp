@@ -576,10 +576,38 @@ std::vector<uint8_t> icmpFrame(uint8_t icmpType, uint8_t icmpCode, bool vlanTagg
 
 size_t paddedWords(size_t byteCount) { return (byteCount + 3) / 4; }
 
-/// One flow_sample (format 1) laid out the way the Mininet-mode parser reads it.
-DatagramBuilder standardIcmpDatagram(uint8_t icmpType, uint8_t icmpCode)
+/// Ethernet + IPv4 + 20-byte TCP header, 10.0.0.1:5001 -> 10.0.0.2:40997, optionally
+/// 802.1Q-tagged. The checksum's high byte is set separately from the flags byte so a test
+/// can tell which of the two the parser read.
+std::vector<uint8_t> tcpFrame(uint8_t tcpFlags, uint8_t checksumHigh, bool vlanTagged)
 {
-    const auto frame = icmpFrame(icmpType, icmpCode, false);
+    std::vector<uint8_t> f = {0x00, 0x00, 0x00, 0x00, 0x00, 0x02,  // dst MAC
+                              0x00, 0x00, 0x00, 0x00, 0x00, 0x01}; // src MAC
+    if (vlanTagged)
+    {
+        f.insert(f.end(), {0x81, 0x00, 0x00, 0x64}); // TPID, TCI (VLAN 100)
+    }
+    f.insert(f.end(), {0x08, 0x00}); // IPv4
+    f.insert(f.end(),
+             {0x45, 0x00, 0x00, 0x28, // version/IHL, TOS, total length 40
+              0x00, 0x01, 0x00, 0x00, // id, flags/fragment offset 0
+              0x40, 0x06, 0x00, 0x00, // TTL, protocol TCP, checksum
+              10,   0,    0,    1,    // src
+              10,   0,    0,    2});  // dst
+    f.insert(f.end(),
+             {0x13, 0x89, 0xa0, 0x25, // src port 5001, dst port 40997
+              0x00, 0x00, 0x00, 0x01, // sequence number
+              0x00, 0x00, 0x00, 0x01, // acknowledgment number
+              0x50, tcpFlags,         // data offset 5, flags
+              0x01, 0x00,             // window
+              checksumHigh, 0x00,     // checksum
+              0x00, 0x00});           // urgent pointer
+    return f;
+}
+
+/// One flow_sample (format 1) laid out the way the Mininet-mode parser reads it.
+DatagramBuilder standardDatagram(const std::vector<uint8_t>& frame)
+{
     const size_t hdrWords = paddedWords(frame.size());
     DatagramBuilder b;
     b.header(1);
@@ -605,9 +633,8 @@ DatagramBuilder standardIcmpDatagram(uint8_t icmpType, uint8_t icmpCode)
 }
 
 /// One flow_sample_expanded (format 3), the HPE layout.
-DatagramBuilder expandedIcmpDatagram(uint8_t icmpType, uint8_t icmpCode)
+DatagramBuilder expandedDatagram(const std::vector<uint8_t>& frame)
 {
-    const auto frame = icmpFrame(icmpType, icmpCode, true);
     const size_t hdrWords = paddedWords(frame.size());
     DatagramBuilder b;
     b.header(1);
@@ -629,6 +656,16 @@ DatagramBuilder expandedIcmpDatagram(uint8_t icmpType, uint8_t icmpCode)
     b.word(static_cast<uint32_t>(frame.size()));     // header length
     b.octets(frame);
     return b;
+}
+
+DatagramBuilder standardIcmpDatagram(uint8_t icmpType, uint8_t icmpCode)
+{
+    return standardDatagram(icmpFrame(icmpType, icmpCode, false));
+}
+
+DatagramBuilder expandedIcmpDatagram(uint8_t icmpType, uint8_t icmpCode)
+{
+    return expandedDatagram(icmpFrame(icmpType, icmpCode, true));
 }
 
 } // namespace
@@ -704,6 +741,76 @@ TEST_F(SFlowIcmpFieldsTest, ExpandedSampleKeepsEchoRequest)
     const auto key = onlyIcmpKey(expandedIcmpDatagram(8, 0), utils::DeploymentMode::TESTBED);
     EXPECT_EQ(key.srcPort, 8) << "ICMP type";
     EXPECT_EQ(key.dstPort, 0) << "ICMP code";
+}
+
+// =====================================================================================
+// TCP ACK flag, both flow-sample formats
+// =====================================================================================
+//
+// [Co-developed with claude code -- Adam]
+//
+// The TCP flags are byte 13 of the TCP header. With a 20-byte IPv4 header the TCP header
+// starts at byte 34 of an untagged frame and byte 38 of a tagged one, so the flags byte is
+// the last byte of sample word +27 (standard, header bytes from word +16) or +31 (expanded,
+// header bytes from word +19). Each test sets the flags byte and the checksum's high byte
+// (three bytes later) to opposite answers, so reading the wrong one fails.
+//
+// isAck and isPureAck are stored only when a sample updates an existing flow, so each test
+// feeds the same sample twice and checks the flow after the second feed. The frames are
+// under 80 bytes, the parser's pure-ACK size threshold.
+
+class SFlowTcpAckTest : public SFlowParsingFixture
+{
+  protected:
+    sflow::FlowInfo flowAfterTwoFeeds(const DatagramBuilder& b, utils::DeploymentMode mode)
+    {
+        resetCollector(mode);
+        feed(b);
+        feed(b);
+        const auto table = m_collector->getFlowInfoTable();
+        EXPECT_EQ(table.size(), 1u) << "expected one flow from the same TCP sample fed twice";
+        for (const auto& [key, info] : table)
+        {
+            EXPECT_EQ(int(key.protocol), 6);
+            EXPECT_EQ(key.srcPort, 5001);
+            EXPECT_EQ(key.dstPort, 40997);
+            return info;
+        }
+        ADD_FAILURE() << "no flow extracted";
+        return {};
+    }
+};
+
+TEST_F(SFlowTcpAckTest, StandardSampleReadsAckFromTheFlagsByte)
+{
+    const auto info = flowAfterTwoFeeds(standardDatagram(tcpFrame(0x10, 0x00, false)),
+                                        utils::DeploymentMode::MININET);
+    EXPECT_TRUE(info.isAck) << "flags 0x10 (ACK)";
+    EXPECT_TRUE(info.isPureAck) << "ACK in a frame under 80 bytes";
+}
+
+TEST_F(SFlowTcpAckTest, StandardSampleIgnoresTheChecksumByte)
+{
+    const auto info = flowAfterTwoFeeds(standardDatagram(tcpFrame(0x02, 0x10, false)),
+                                        utils::DeploymentMode::MININET);
+    EXPECT_FALSE(info.isAck) << "flags 0x02 (SYN); 0x10 is in the checksum";
+    EXPECT_FALSE(info.isPureAck);
+}
+
+TEST_F(SFlowTcpAckTest, ExpandedSampleReadsAckFromTheFlagsByte)
+{
+    const auto info = flowAfterTwoFeeds(expandedDatagram(tcpFrame(0x10, 0x00, true)),
+                                        utils::DeploymentMode::TESTBED);
+    EXPECT_TRUE(info.isAck) << "flags 0x10 (ACK)";
+    EXPECT_TRUE(info.isPureAck) << "ACK in a frame under 80 bytes";
+}
+
+TEST_F(SFlowTcpAckTest, ExpandedSampleIgnoresTheChecksumByte)
+{
+    const auto info = flowAfterTwoFeeds(expandedDatagram(tcpFrame(0x02, 0x10, true)),
+                                        utils::DeploymentMode::TESTBED);
+    EXPECT_FALSE(info.isAck) << "flags 0x02 (SYN); 0x10 is in the checksum";
+    EXPECT_FALSE(info.isPureAck);
 }
 
 // =====================================================================================
