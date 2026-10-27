@@ -90,11 +90,19 @@ jobs:
 
       - name: Python unit tests
         run: bash tools/test_workflow/l1_unit_tests.sh
-        # l1_unit_tests.sh treats a fully-skipped Python file as a FAILURE unless it declares
-        # NDTWIN_L1_OPT_IN, because unittest counts skipped tests inside "Ran N" and a file where
-        # every test skips prints "Ran 55 tests / OK". With the requirements installed above, the
-        # only file that legitimately skips is test_p4_client.py, whose single test declares it
-        # needs a live switch.
+        # l1_unit_tests.sh never counts a skip as a pass (unittest counts skipped tests inside
+        # "Ran N", so a file where every test skips prints "Ran 55 tests / OK"). What it reports
+        # here without failing:
+        #   * test_p4_client.py: SKIPPED, on every machine. It declares NDTWIN_L1_OPT_IN (needs a
+        #     live switch) and the lane takes that declaration as given; it does not check for a
+        #     switch.
+        #   * PROVED LESS for the P4 cases that need the compiled program. The lane checks this
+        #     itself: there is no p4_src/build here.
+        #   * DECLARED SKIP for kernel-side files whose NDTWIN_L1_NEEDS this runner lacks: `ryu`
+        #     (Ryu needs its own Python 3.8 env). The lane probes for it, and excuses the skip only
+        #     because this is a hosted runner (CI / GITHUB_ACTIONS): elsewhere the same skip fails
+        #     and names the missing need.
+        # Any other skip is a failure, and so are the last two on a machine that has what they need.
 
   # ===========================================================================
   # ASan + UBSan. Same tests, different instrumentation.
