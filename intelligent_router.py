@@ -699,7 +699,7 @@ class IntelligentRyu(app_manager.RyuApp):
     # So the rules installed ~60s after startup were the final state for the life of the run.
     # Observed: `link s1 s5 down` with a flow crossing that link -- traffic stopped arriving, was
     # never rerouted, and the twin (correctly) showed the edge down while Ryu's own graph still had
-    # it. See doc/2026-07-29_HANDOFF.md section 1g.
+    # it. [Co-developed with claude code -- Adam]
     def _active_net(self):
         """The graph routes are computed from: whichever of the two this run is using."""
         return self.dynamic_net if self.is_dynamically_detect_topo else self.static_net
@@ -770,11 +770,12 @@ class IntelligentRyu(app_manager.RyuApp):
             # is running, so a change arriving during install_all_pair_paths is *dropped* -- and the
             # only place it can still be noticed is here, after the walk.
             #
-            # Without it the window was the duration of the walk: 16256 host pairs, about 60s (see
-            # doc/2026-07-29_HANDOFF.md 1g). A second link failing in that window was never recomputed, which is
-            # the same silent non-recovery 2c81b26 was written to fix -- and the log said "route
-            # reinstall done", meaning the *previous* change. Found by review, not by a test; the
-            # tests below cover the debounce but nothing yet drives a change into the walk.
+            # Without it the window was the duration of the walk: 16256 host pairs, about 60s (the
+            # figure as first written down, 2026-08-03). A second link failing in that window was
+            # never recomputed, which is the same silent non-recovery 2c81b26 was written to fix --
+            # and the log said "route reinstall done", meaning the *previous* change. Found by
+            # review, not by a test; the tests below cover the debounce but nothing yet drives a
+            # change into the walk. [Co-developed with claude code -- Adam]
             while True:
                 # Wait for the graph to stop moving: if another change arrives while we sleep, start
                 # the quiet period again.
@@ -1578,9 +1579,8 @@ class IntelligentRyu(app_manager.RyuApp):
         #          three together, not a reading of the walk.
         #   ~60 s  asserted -- the comments beside initial_install_deadline and
         #          initial_install_wait_limit, this method's own tests, and 5affd93's commit
-        #          message all say "the walk is ~60 s over 16256 pairs", sourced from
-        #          doc/2026-07-29_HANDOFF.md 1g -- which predates cc249c8, i.e. predates 128
-        #          hosts being runnable at all.
+        #          message all say "the walk is ~60 s over 16256 pairs", sourced from a
+        #          figure first written down on 2026-08-03. [Co-developed with claude code -- Adam]
         #
         # Split into two phases because they scale differently and only one of them is what
         # "16256 pairs" names. The BFS installs one rule per (switch, dst): 1280 at 128 hosts.
@@ -1917,9 +1917,10 @@ class IntelligentRyu(app_manager.RyuApp):
         #
         # This used to sit *below* the notification, which meant it inherited an unbounded
         # `requests.post`. A refused connection returns at once, but a process that accepts and never
-        # answers blocks forever and raises nothing, so the `except` below does not help -- and
-        # HANDOFF 1j records a wedged kernel holding :8000 biting three times. The edge would never
-        # have been removed and no reinstall scheduled: exactly the pre-2c81b26 behaviour, silently.
+        # answers blocks forever and raises nothing, so the `except` below does not help. Had
+        # the call hung, the edge would never have been removed and no reinstall scheduled:
+        # exactly the pre-2c81b26 behaviour, silently. (A separate hazard on the same port: by
+        # 2026-07-31 a leftover kernel still holding :8000 had caused trouble three times.)
         # Beyond the hang, this graph is this application's own state and has no business being
         # conditional on a remote call at all.
         net = self._active_net()

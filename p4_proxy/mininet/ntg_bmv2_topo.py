@@ -18,9 +18,9 @@ dist-packages append below borrows the system Mininet the same way NTG's own top
     sudo /home/adam/miniconda3/envs/ntg-env/bin/python ntg_bmv2_topo.py
 
 Then, at the NTG prompt -- with the P4 stack's rates in mind. This bmv2 is an unoptimized
--O0 build and literature puts the grpc variant around ~170 Mbps per switch (see
-doc/2026-08-15_bmv2-performance-report.md), so use the low-rate template next to this
-script rather than NTG's defaults:
+-O0 build: measured 2026-08-15 on a 10-switch fabric, 1400 B UDP over a 3-hop path was
+delivered at most ~40-42 Mbps, and the ~170 Mbps the literature gives for the grpc variant does
+not describe it. Use the low-rate template next to this script rather than NTG's defaults:
 
     flow --config /home/adam/Desktop/NDTwin-Kernel/p4_proxy/mininet/flow_bmv2_low.json
 

@@ -269,7 +269,7 @@ class RefusalReachesTheEntryPointsTest(unittest.TestCase):
 
     [Co-developed with claude code -- Adam]
     Everything above tests the helper. These drive route_flow / unroute_flow / modify_flow
-    themselves, because the scoped review's finding (2026-07-31, HANDOFF 1k item 3) was
+    themselves, because the scoped review's finding (2026-07-31) was
     precisely that nothing did: all three `raise` statements could be replaced with `pass`
     and this file stayed green -- which resurrects the silently-narrowed rule end to end
     while every unit test here keeps passing. The second half of each assertion is the

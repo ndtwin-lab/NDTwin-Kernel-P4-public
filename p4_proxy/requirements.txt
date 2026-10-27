@@ -27,8 +27,9 @@ requests>=2.28
 # widely-used name (mcp 2.0.0 vendoring a fake httpx), so nothing here floats.
 hypothesis==6.165.5
 
+# [Co-developed with claude code -- Adam]
 # Not imported by the proxy. bmv2's counter/register CLI needs the thrift binding, and the
-# recipe took two tries to get right (verified live 2026-08-13, HANDOFF section 4):
+# recipe took two tries to get right (verified live 2026-08-13):
 #
 #   BM=/home/adam/P4_Source_Code/behavioral-model
 #   PYTHONPATH="$BM/targets/simple_switch:$BM/tools" p4_proxy/venv/bin/python \

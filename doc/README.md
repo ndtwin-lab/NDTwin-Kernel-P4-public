@@ -20,12 +20,11 @@ repo 外的一組連結。所以這份索引取代分區——標記地位，不
 
 ---
 
-## 先讀這三份
+## 先讀這兩份
 
 | 檔案 | 為什麼是它 |
 |---|---|
 | [2026-08-17_testing-manual.md](2026-08-17_testing-manual.md) | **「我現在該跑什麼」的唯一入口**；**§2 是完整的開機手冊**（清空／起 bmv2 與 OVS／切拓樸／改參數／Mininet 與 NTG／開 app／收尾／故障排除）。其餘七份測試文件的地位也列在它裡面 |
-| [2026-07-29_HANDOFF.md](2026-07-29_HANDOFF.md) | 未結的決策與開放工作。是待辦清單，不是說明書 |
 | [2026-01-02_ndt_api.md](2026-01-02_ndt_api.md) | `/ndt/*` 的 41 個端點，與 dispatcher 逐條相符。7 個兄弟元件與 kernel 之間唯一的介面 |
 
 ---
@@ -58,19 +57,13 @@ repo 外的一組連結。所以這份索引取代分區——標記地位，不
 
 | 檔案 | 地位 | 一句話 |
 |---|---|---|
-| [2026-08-14_cross-component-integration-matrix.md](2026-08-14_cross-component-integration-matrix.md) | **現役** | 8 元件串接矩陣。跨 repo 的事先讀它 |
-| [2026-08-15_bmv2-performance-report.md](2026-08-15_bmv2-performance-report.md) | **現役** | bmv2 效能：debug build 的代價、A/B 飽和實測（12–18×）。**含一節撤回案（clone cap 從來不存在），引用前先看那節** |
-| [2026-08-16_src-ip-endianness-review.md](2026-08-16_src-ip-endianness-review.md) | **現役** | `src_ip` 是三消費端依賴的既成契約；末節是 TE priority/idle_timeout 的更正 |
 | [2026-08-13_p4runtime-mastership-spec-check.md](2026-08-13_p4runtime-mastership-spec-check.md) | 已結案 | 結論是**上游沒有 bug**、肇因在我方 election id 重用。它是更正稿，別引用它的舊版標題 |
 
 ## 草稿與交付
 
 | 檔案 | 地位 | 下一步是誰 |
 |---|---|---|
-| [2026-08-16_delivery-package/](2026-08-16_delivery-package/) | **待轉交** | **Adam**：NTG 三條給 NTG 維護者、手冊條目與三條勘誤給 patty。三檔已定稿、內部前言已移除 |
-| [2026-08-15_ntg-upstream-report-draft.md](2026-08-15_ntg-upstream-report-draft.md) | 草稿（原稿） | 乾淨版在投遞包裡；這份保留內部前言 |
-| [2026-08-15_bmv2-performance-build-public-manual-draft.md](2026-08-15_bmv2-performance-build-public-manual-draft.md) | 草稿（原稿） | 同上 |
-| [2026-08-16_p4lang-clone-stacking-issue-draft.md](2026-08-16_p4lang-clone-stacking-issue-draft.md) | **已結案：不投遞** | 沒有人。Adam 2026-08-17 裁決只歸檔；我方曝險已由 settle pair (`79e4f69`) 關閉 |
+| [2026-08-16_delivery-package/](2026-08-16_delivery-package/) | **待轉交** | 安裝手冊的維護者：bmv2 效能 build 的手冊條目（`bmv2-manual-entry.md`，目錄裡只有這一份） |
 
 ## 廠商參考（baseline 時期）
 
